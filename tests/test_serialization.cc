@@ -26,8 +26,7 @@ int main(){
     m.deserialize("mean.json"); 
     m.serialize();
 
-
-    std::cout << "Serialization Tests passed successfully! \n"; 
+    std::cout << "Serialization Tests Passed! \n"; 
 
 
     return 0;
