@@ -13,8 +13,8 @@ int main(){
 
     Graph test("mean");
 
-    Node n1("sdfsdf", {{"hello", "there"}});
-    Node n2("mello", {{"may", "me"}});
+    Node n1("sdfsdf", "Person", {{"hello", "there"}});
+    Node n2("mello", "Person", {{"may", "me"}});
 
     test.add_node(n2);
     test.add_node(n1);

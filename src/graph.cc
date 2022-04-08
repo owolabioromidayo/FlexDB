@@ -23,8 +23,8 @@ std::string Graph::get_name(){
 };
 
 void Graph::add_node(Node nnode){ 
-    std::string name = nnode.get_name();
-    nodeMap.insert(std::make_pair(name,  nnode));
+    std::string nodeId = nnode.get_id();
+    nodeMap.insert(std::make_pair(nodeId,  nnode));
 };
 
 void Graph::add_edge(Node* n1, Node* n2, std::string label, int weight){
@@ -33,7 +33,7 @@ void Graph::add_edge(Node* n1, Node* n2, std::string label, int weight){
     n.dest = n2->get_name();
     n.label = label;
     n.weight = weight;
-    n.id = n.source + "-" + n.dest;
+    n.id = n1->get_id() + "->" + n2->get_id();
 
     edges.insert(n);
     n1->add_connection(n2);
@@ -45,27 +45,30 @@ void Graph::serialize(){
     std::unordered_map<std::string, Node>::iterator iter; 
 
     for(iter = nodeMap.begin(); iter != nodeMap.end(); iter++){
-        std::string nodeName = iter->first;
-        Node curr_node = iter->second;
+        Node currNode = iter->second;
+        std::string nodeId = currNode.get_id();
 
-        j["nodes"][nodeName] = {}; //save each node
-        j["nodes"][nodeName]["table"] = {};  //store table 
+
+        j["nodes"][nodeId] = {}; //save each node
+        j["nodes"][nodeId]["name"] = currNode.get_name();
+        j["nodes"][nodeId]["type"] = currNode.get_type();
+        j["nodes"][nodeId]["table"] = {};  //store table 
 
         std::map<std::string, std::string>::iterator tableIter;
-        Table table = curr_node.get_table();
+        Table table = currNode.get_table();
         for(tableIter = table.begin(); tableIter != table.end(); tableIter++){
 
             std::string key = tableIter->first;
             std::string value = tableIter->second;
 
-            j["nodes"][nodeName]["table"][key] = value;
+            j["nodes"][nodeId]["table"][key] = value;
         }
 
         // store connections - list has to be of form std::vector for json serialization
-        std::set<std::string> connections = curr_node.get_connections();
+        std::set<std::string> connections = currNode.get_connections();
         std::vector<std::string> vectorisedConnections(connections.size());
         std::copy(connections.begin(), connections.end(), vectorisedConnections.begin());
-        j["nodes"][nodeName]["connections"] = vectorisedConnections;
+        j["nodes"][nodeId]["connections"] = vectorisedConnections;
 
 
     }
@@ -100,22 +103,24 @@ void Graph::deserialize(std::string filename){
     //create new nodes
     for (json::iterator it = nodes.begin(); it != nodes.end(); ++it){
     
-        Node n(it.key());
-        json node_data = it.value();
+        std::string nodeId= it.key();
+        json nodeData = it.value();
+
+        Node n(nodeData["name"] , nodeData["type"], nodeId);
 
         //insert table data back into node
-        json table = node_data["table"];
+        json table = nodeData["table"];
         for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
             n.insert_row(it2.key(), it2.value());
         }
 
         //insert connections back
-        json connections = node_data["connections"];
+        json connections = nodeData["connections"];
         for (json::iterator it2 = connections.begin(); it2 != connections.end(); ++it2){
             n.add_connection(*it2);
         }
 
-        add_node(n);
+        this->add_node(n);
     }
 
     //const auto iterators are bad for maps apparently
@@ -130,8 +135,8 @@ void Graph::deserialize(std::string filename){
          
         json edge_data = it.value();
      
-        std::string _n1 = it.key().substr(0, it.key().find("-"));
-        std::string _n2 = it.key().substr(it.key().find("-")+1, -1);
+        std::string _n1 = it.key().substr(0, it.key().find("->"));
+        std::string _n2 = it.key().substr(it.key().find("->")+2, -1);
 
         Node n1 = nodeMap.at(_n1);
         Node n2 = nodeMap.at(_n2);

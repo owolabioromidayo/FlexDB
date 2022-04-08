@@ -7,24 +7,60 @@
 
 
 //constructors
-Node::Node(std::string iname){
+Node::Node(std::string iname, std::string itype){
+    if (iname == ""){
+        throw "Field 'Name' of Class Node cannot be empty.";
+    }
+    if (itype == ""){
+        throw "Field 'Type' of Class Node cannot be empty.";
+    }
     name = iname;
+    type = itype;
 };
 
-Node::Node(std::string iname, Table itable){
+Node::Node(std::string iname, std::string itype, std::string iid){
+    if (iname == ""){
+        throw "Field 'Name' of Class Node cannot be empty.";
+    }
+    if (itype == ""){
+        throw "Field 'Type' of Class Node cannot be empty.";
+    }
+    if (iid == ""){
+        throw "Field 'ID' of Class Node cannot be empty.";
+    }
+
+    name = iname;
+    type = itype;
+    id = iid;
+};
+
+
+Node::Node(std::string iname, std::string itype, Table itable){
+    if (iname == ""){
+        throw "Field 'Name' of Class Node cannot be empty.";
+    }
+    if (itype == ""){
+        throw "Field 'Type' of Class Node cannot be empty.";
+    }
+
     name = iname;
     table = itable;
+    type = itype;
 };
 
-Node::Node(std::string iname, Table itable, std::set<std::string> connections){
+
+Node::Node(std::string iname, std::string itype, Table itable, std::set<std::string> connections){
+    if (iname == ""){
+        throw "Field 'Name' of Class Node cannot be empty.";
+    }
+    if (itype == ""){
+        throw "Field 'Type' of Class Node cannot be empty.";
+    }
+
     name = iname;
     table = itable;
     connections = connections;
-};
-
-
-std::string Node::get_name(){
-    return name;
+    type = itype;
 };
 
 
@@ -80,9 +116,10 @@ void Node::clear_table(){
 }
 
 
+//setters and getters
 
 void Node::__repr__(){
-    std::cout << "Representation for Node "<< name << std::endl;
+    std::cout << "Representation for Node "<< name << " of Type "<< type << std::endl;
 
     std::cout << "\nConnections" << std::endl;
     for(std::set<std::string>::iterator it = connections.begin(); it != connections.end(); ++it){
@@ -94,8 +131,12 @@ void Node::__repr__(){
         std::cout << it->first << " - " << it->second<< std::endl;
         
     }
-
     std::cout << "\n"; 
 
 
 }
+
+std::string Node::get_name(){ return name;}
+std::string Node::get_type(){ return type;}
+std::string Node::get_id(){ return id;}
+

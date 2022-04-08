@@ -6,21 +6,23 @@
 #include <set>
 
 #include "types.hpp"
+#include "../lib/sole/sole.hpp"
 
 class Node{
 
     public:
-        Node(std::string iname);
-        Node(std::string iname, Table itable);
-        Node(std::string iname, Table itable, std::set<std::string> connections);
+        //constructors
+        Node(std::string iname, std::string itype);
+        Node(std::string iname, std::string itype, std::string id);
+        Node(std::string iname, std::string itype, Table itable);
+        Node(std::string iname, std::string itype,  Table itable, std::set<std::string> connections);
+        
 
-        std::string get_name();
 
         //connection operations
         std::set<std::string> get_connections();
         void add_connection(Node* n);
         void add_connection(std::string n);
-
 
         // table operations
         Table get_table();
@@ -33,8 +35,17 @@ class Node{
 
         void __repr__();
 
+
+        //setters and getters
+        std::string get_name();
+        std::string get_type();
+        std::string get_id();
+
+
     private:
         std::string name;
+        std::string type;
+        std::string id = sole::uuid4().str();
         std::set<std::string> connections {};
         Table table;
         
@@ -42,9 +53,10 @@ class Node{
 
 struct Edge{
     std::string label;
-    std::string  source;
-    std::string  dest;
+    std::string source;
+    std::string dest;
     std::string id;
+    // std::string _id = sole::uuid4().str()
     int weight;
 
     bool operator<(const Edge& rhs) const{
@@ -54,7 +66,6 @@ struct Edge{
         return false;
     }
 
-} ;
-
+};
 
 #endif //NODE_HPP_INCLUDED_
