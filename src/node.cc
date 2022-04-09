@@ -70,30 +70,32 @@ std::set<std::string> Node::get_connections(){
 }
 
 void Node::add_connection(Node *n){
-    connections.insert(n->get_name());
+    std::string id  = n->get_id();
+    std::cout << "Adding connection " << id <<  std::endl;
+    this->connections.insert(id);
 }
 
 void Node::add_connection(std::string n){
-    connections.insert(n);
+    this->connections.insert(n);
 }
 
 //setters and getters
 
 void Node::__repr__(){
+    std::cout << "\n";
     std::cout << "Representation for Node "<< name << " of Type "<< type << std::endl;
+    std::cout << "\tConnections" << std::endl;
 
-    std::cout << "\nConnections" << std::endl;
-    for(std::set<std::string>::iterator it = connections.begin(); it != connections.end(); ++it){
-        std::cout << *it << std::endl;
+    for(std::set<std::string>::iterator it = this->connections.begin(); it != this->connections.end(); ++it){
+        std::cout << "\t\t" << *it << std::endl;
     }
 
-    std::cout << "\nTable" << std::endl;
+    std::cout << "\tTable" << std::endl;
     TableData _table = table.get_table();
     for( TableData::iterator it = _table.begin(); it != _table.end(); ++it){
-        std::cout << it->first << " - " << it->second<< std::endl;  
+        std::cout << "\t\t" << it->first << " - " << it->second<< std::endl;  
     }
-    std::cout << "\n"; 
-
+     
 
 }
 

@@ -27,30 +27,36 @@ void Graph::add_node(Node nnode){
     nodeMap.insert(std::make_pair(nodeId,  nnode));
 };
 
-void Graph::add_edge(Node* n1, Node* n2, std::string label, TableData table){
+void Graph::add_edge(std::string id1, std::string id2, std::string label, TableData table){
     Edge n;
-    n.source = n1->get_id();
-    n.dest = n2->get_id();
+    n.source = id1;
+    n.dest = id2;
     n.label = label;
     n.table = Table(table);
     
     edges.insert(n);
-    n1->add_connection(n2);
+    auto it = this->nodeMap.find(id1);
+    if (it == this->nodeMap.end())
+        throw "ID does not exist!";
+    
+    it->second.add_connection(id2);
 
 }
 
-void Graph::add_edge(Node* n1, Node* n2, std::string label, TableData table, std::string id){
+void Graph::add_edge(std::string id1, std::string id2, std::string label, TableData table, std::string id){
     Edge n;
-    n.source = n1->get_id();
-    n.dest = n2->get_id();
+    n.source = id1;
+    n.dest = id2;
     n.label = label;
     n.table = Table(table);
     n.id = id;
-    
-    edges.insert(n);
-    n1->add_connection(n2);
 
-}
+    edges.insert(n);
+    auto it = this->nodeMap.find(id1);
+    if (it == this->nodeMap.end())
+        throw "ID does not exist!";
+    
+    it->second.add_connection(id2);}
 
 void Graph::delete_node(std::string id){
 
@@ -156,40 +162,55 @@ void Graph::deserialize(std::string filename){
         this->add_node(n);
     }
 
-    //const auto iterators are bad for maps apparently
-    // for(std::map<std::string, Node*>::iterator it= nodeMap.begin(); it != nodeMap.end(); ++it){
-    //     std::cout << it->first << std::endl;
-    // }
+
 
     //rebuild edges
      json edges = j["edges"];
 
      for (json::iterator it = edges.begin(); it != edges.end(); ++it){
-         
         json edge_data = it.value();
-        Node n1 = nodeMap.at(edge_data["source"]);
-        Node n2 = nodeMap.at(edge_data["dest"]);
-
         TableData table = (TableData) edge_data["table"];
-        this->add_edge(&n1, &n2, edge_data["label"], table, it.key());
-
+        this->add_edge(edge_data["source"], edge_data["source"], edge_data["label"], table, it.key());
     }
     
 }
 
 
 void Graph::__repr__(){
-    std::cout << name << std::endl;
+    std::cout << "Representation for graph "<< name << "." << std::endl;
 
-    std::cout << "\nNodeMap" << std::endl;
+    std::cout << "\nNodes" << std::endl;
     for(std::unordered_map<std::string, Node>::iterator it = nodeMap.begin(); it != nodeMap.end(); ++it){
-        std::cout << it->first << " \n ";
         it->second.__repr__();
         std::cout<< "\n";
     }
 
-    std::cout << "\nEdges" << std::endl;
+    std::cout << "Edges" << std::endl;
     for( std::set<Edge>::iterator it = edges.begin(); it != edges.end(); ++it){
         it->__repr__();
     }
 }
+
+
+
+//GETTERS
+Node& Graph::get_node(std::string id){
+    auto it = nodeMap.find(id);
+    if (it == nodeMap.end()){
+        throw "Node of id " + id + " does not exist."; 
+    }
+    else{
+        return  it->second;
+    }
+}
+
+std::vector<Node> Graph::get_nodes_by_type(std::string type){
+    std::vector<Node> matchingNodes;
+    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it){
+       Node currNode = it->second;
+       if (currNode.get_type() == type){
+           matchingNodes.push_back(currNode);
+       }
+    }
+    return matchingNodes;
+} 

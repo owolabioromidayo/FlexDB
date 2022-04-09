@@ -56,15 +56,18 @@ struct Edge{
 
 
     void __repr__() const{
-        std::cout << "id " << id<< std::endl;
-        std::cout << "label " << label<< std::endl;
-        std::cout << "source " << source<< std::endl;
-        std::cout << "dest " << dest<< std::endl;
-        std::cout << "TABLE" << "\n";
 
+        std::cout << "Representation for Edge "<< id << " with Label "<< label << std::endl;
+
+        std::cout << "\tid " << id<< std::endl;
+        std::cout << "\tlabel " << label<< std::endl;
+        std::cout << "\tsource " << source<< std::endl;
+        std::cout << "\tdest " << dest<< std::endl;
+
+        std::cout << "\tTABLE" << "\n";
         TableData _table = this->table.get_table();
         for(TableData::iterator it = _table.begin(); it != _table.end(); ++it){
-            std::cout << it->first << " : "<<  it->second << std::endl;
+            std::cout << "\t\t"<<it->first << " : "<<  it->second << std::endl;
         }
     }
 
