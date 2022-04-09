@@ -27,12 +27,12 @@ void Graph::add_node(Node nnode){
     nodeMap.insert(std::make_pair(nodeId,  nnode));
 };
 
-void Graph::add_edge(Node* n1, Node* n2, std::string label, Table table){
+void Graph::add_edge(Node* n1, Node* n2, std::string label, TableData table){
     Edge n;
     n.source = n1->get_name();
     n.dest = n2->get_name();
     n.label = label;
-    n.table = table;
+    n.table = Table(table);
     n.id = n1->get_id() + "->" + n2->get_id();
 
     edges.insert(n);
@@ -55,12 +55,10 @@ void Graph::serialize(){
         j["nodes"][nodeId]["table"] = {};  //store table 
 
         std::map<std::string, std::string>::iterator tableIter;
-        Table table = currNode.get_table();
+        TableData table = currNode.table.get_table();
         for(tableIter = table.begin(); tableIter != table.end(); tableIter++){
-
             std::string key = tableIter->first;
             std::string value = tableIter->second;
-
             j["nodes"][nodeId]["table"][key] = value;
         }
 
@@ -84,7 +82,7 @@ void Graph::serialize(){
         j["edges"][id]["table"] = {};  
 
         std::map<std::string, std::string>::iterator tableIter;
-        Table table = edgesIter->table;
+        TableData table = edgesIter->table.get_table();
         for(tableIter = table.begin(); tableIter != table.end(); tableIter++){
             std::string key = tableIter->first;
             std::string value = tableIter->second;
@@ -120,7 +118,7 @@ void Graph::deserialize(std::string filename){
         //insert table data back into node
         json table = nodeData["table"];
         for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
-            n.insert_row(it2.key(), it2.value());
+            n.table.insert_row(it2.key(), it2.value());
         }
 
         //insert connections back
@@ -151,9 +149,9 @@ void Graph::deserialize(std::string filename){
         Node n2 = nodeMap.at(_n2);
 
         json table = edge_data["table"];
-        for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
-            table[it2.key()] = it2.value();
-        }
+        // for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
+        //     table[it2.key()] = it2.value();
+        // }
 
         this->add_edge(&n1, &n2, edge_data["label"], table);
 
@@ -165,24 +163,15 @@ void Graph::deserialize(std::string filename){
 void Graph::__repr__(){
     std::cout << name << std::endl;
 
-    std::cout << "\nnodemap" << std::endl;
+    std::cout << "\nNodeMap" << std::endl;
     for(std::unordered_map<std::string, Node>::iterator it = nodeMap.begin(); it != nodeMap.end(); ++it){
-        std::cout << it->first << " - " << (it->second).get_name()  << std::endl;
+        std::cout << it->first << " \n ";
+        it->second.__repr__();
+        std::cout<< "\n\n";
     }
 
-    std::cout << "\nedges" << std::endl;
+    std::cout << "\nEdges" << std::endl;
     for( std::set<Edge>::iterator it = edges.begin(); it != edges.end(); ++it){
-  
-        std::cout << "id " << it->id<< std::endl;
-        std::cout << "label " << it->label<< std::endl;
-        std::cout << "source " << it->source<< std::endl;
-        std::cout << "dest " << it->dest<< std::endl;
-
-        
+        it->__repr__();
     }
-
-
 }
-
-
-// if the error doesnt occur for pure objects then the error rmust stem from my deserialization

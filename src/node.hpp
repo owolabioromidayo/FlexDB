@@ -11,43 +11,32 @@
 class Node{
 
     public:
+        Table table;
+
         //constructors
         Node(std::string iname, std::string itype);
         Node(std::string iname, std::string itype, std::string id);
-        Node(std::string iname, std::string itype, Table itable);
-        Node(std::string iname, std::string itype,  Table itable, std::set<std::string> connections);
-        
-
+        Node(std::string iname, std::string itype, TableData itable);
+        Node(std::string iname, std::string itype,  TableData itable, std::set<std::string> connections);
 
         //connection operations
         std::set<std::string> get_connections();
         void add_connection(Node* n);
         void add_connection(std::string n);
 
-        // table operations
-        Table get_table();
-        std::string get_row(std::string key);
-        void insert_row(std::string key, std::string value);
-        void edit_row(std::string key, std::string value);
-        void delete_row(std::string key, std::string value);
-        void clear_row(std::string key);
-        void clear_table();
-
         void __repr__();
-
 
         //setters and getters
         std::string get_name();
         std::string get_type();
         std::string get_id();
 
-
     private:
         std::string name;
         std::string type;
         std::string id = sole::uuid4().str();
         std::set<std::string> connections {};
-        Table table;
+       
         
 };
 
@@ -66,45 +55,17 @@ struct Edge{
     }
 
 
-    //table operations
-    Table get_table(){return table; }
+    void __repr__() const{
+        std::cout << "id " << id<< std::endl;
+        std::cout << "label " << label<< std::endl;
+        std::cout << "source " << source<< std::endl;
+        std::cout << "dest " << dest<< std::endl;
+        std::cout << "TABLE" << "\n";
 
-    void insert_row(std::string key, std::string value){
-        Table::iterator it;
-        it = table.find(key);
-        if(it == table.end()) 
-            table[key] = value;
-        else{
-            throw "Key already exists in Edge with source " + source + "and dest " + dest + "with Label " + label  + " and  ID" + id + ".";
+        TableData _table = this->table.get_table();
+        for(TableData::iterator it = _table.begin(); it != _table.end(); ++it){
+            std::cout << it->first << " : "<<  it->second << std::endl;
         }
-    }
-
-    void edit_row(std::string key, std::string value){
-        table[key] = value;
-    }
-
-    void delete_row(std::string key, std::string value){
-        table.erase(key);
-    }
-
-    std::string get_row(std::string key){
-        Table::iterator it;
-        it = table.find(key);
-        if(it == table.end()) 
-            return "";
-        else
-            return it->second;
-    }
-
-    void clear_row(std::string key){
-        Table::iterator it;
-        it = table.find(key);
-        if(it != table.end()) 
-            table[key] = "";
-    }
-
-    void clear_table(){
-        table.clear();
     }
 
 };

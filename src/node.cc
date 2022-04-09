@@ -35,7 +35,7 @@ Node::Node(std::string iname, std::string itype, std::string iid){
 };
 
 
-Node::Node(std::string iname, std::string itype, Table itable){
+Node::Node(std::string iname, std::string itype, TableData itable){
     if (iname == ""){
         throw "Field 'Name' of Class Node cannot be empty.";
     }
@@ -44,12 +44,12 @@ Node::Node(std::string iname, std::string itype, Table itable){
     }
 
     name = iname;
-    table = itable;
+    table = Table(itable);
     type = itype;
 };
 
 
-Node::Node(std::string iname, std::string itype, Table itable, std::set<std::string> connections){
+Node::Node(std::string iname, std::string itype, TableData itable, std::set<std::string> connections){
     if (iname == ""){
         throw "Field 'Name' of Class Node cannot be empty.";
     }
@@ -58,7 +58,7 @@ Node::Node(std::string iname, std::string itype, Table itable, std::set<std::str
     }
 
     name = iname;
-    table = itable;
+    table = Table(itable);
     connections = connections;
     type = itype;
 };
@@ -77,52 +77,6 @@ void Node::add_connection(std::string n){
     connections.insert(n);
 }
 
-
-// table operations
-Table Node::get_table(){
-    return table;
-}
-
-void Node::insert_row(std::string key, std::string value){
-    Table::iterator it;
-    it = table.find(key);
-    if(it == table.end()) 
-        table[key] = value;
-    else{
-        throw "Key already exists in Node " +   name + ", Type " + type + "ID " + id + ".";
-    }
-   
-}
-
-void Node::edit_row(std::string key, std::string value){
-    table[key] = value;
-}
-
-void Node::delete_row(std::string key, std::string value){
-    table.erase(key);
-}
-
-std::string Node::get_row(std::string key){
-    Table::iterator it;
-    it = table.find(key);
-    if(it == table.end()) 
-        return "";
-    else
-        return it->second;
-}
-
-void Node::clear_row(std::string key){
-    Table::iterator it;
-    it = table.find(key);
-    if(it != table.end()) 
-        table[key] = "";
-}
-
-void Node::clear_table(){
-    table.clear();
-}
-
-
 //setters and getters
 
 void Node::__repr__(){
@@ -134,9 +88,9 @@ void Node::__repr__(){
     }
 
     std::cout << "\nTable" << std::endl;
-    for( Table::iterator it = table.begin(); it != table.end(); ++it){
-        std::cout << it->first << " - " << it->second<< std::endl;
-        
+    TableData _table = table.get_table();
+    for( TableData::iterator it = _table.begin(); it != _table.end(); ++it){
+        std::cout << it->first << " - " << it->second<< std::endl;  
     }
     std::cout << "\n"; 
 
