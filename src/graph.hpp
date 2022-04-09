@@ -16,6 +16,8 @@ class Graph{
         void add_edge(Node* n1, Node* n2, std::string label, TableData table);
         void add_edge(Node* n1, Node* n2, std::string label, TableData table, std::string id);
 
+        void delete_node(std::string id);
+
         void serialize();
         void deserialize(std::string filename);
 

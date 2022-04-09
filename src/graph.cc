@@ -52,6 +52,19 @@ void Graph::add_edge(Node* n1, Node* n2, std::string label, TableData table, std
 
 }
 
+void Graph::delete_node(std::string id){
+
+    this->nodeMap.erase(id);
+    std::set<Edge>::iterator edgesIter =  this->edges.begin();
+    while(edgesIter != edges.end()){
+        if (edgesIter->source == id || edgesIter->dest == id){
+            edgesIter = edges.erase(edgesIter);
+        }else{
+            ++edgesIter;
+        }
+    }
+}
+
 
 void Graph::serialize(){
     json j;
@@ -129,7 +142,7 @@ void Graph::deserialize(std::string filename){
         Node n(nodeData["name"] , nodeData["type"], nodeId);
 
         //insert table data back into node
-        TableData table = (TableData) nodeData["table"];
+        json table = nodeData["table"];
         for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
             n.table.insert_row(it2.key(), it2.value());
         }
@@ -172,7 +185,7 @@ void Graph::__repr__(){
     for(std::unordered_map<std::string, Node>::iterator it = nodeMap.begin(); it != nodeMap.end(); ++it){
         std::cout << it->first << " \n ";
         it->second.__repr__();
-        std::cout<< "\n\n";
+        std::cout<< "\n";
     }
 
     std::cout << "\nEdges" << std::endl;

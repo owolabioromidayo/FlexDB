@@ -29,6 +29,13 @@ int main(){
     std::cout << "Serialization Tests Passed! \n"; 
 
 
+    //Deletion
+    m.delete_node(n2.get_id());
+    m.serialize();
+
+
+    std::cout << "Deletion Tests Passed! \n"; 
+
     return 0;
 
 
