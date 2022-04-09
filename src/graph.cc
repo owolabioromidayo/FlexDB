@@ -29,16 +29,29 @@ void Graph::add_node(Node nnode){
 
 void Graph::add_edge(Node* n1, Node* n2, std::string label, TableData table){
     Edge n;
-    n.source = n1->get_name();
-    n.dest = n2->get_name();
+    n.source = n1->get_id();
+    n.dest = n2->get_id();
     n.label = label;
     n.table = Table(table);
-    n.id = n1->get_id() + "->" + n2->get_id();
-
+    
     edges.insert(n);
     n1->add_connection(n2);
 
 }
+
+void Graph::add_edge(Node* n1, Node* n2, std::string label, TableData table, std::string id){
+    Edge n;
+    n.source = n1->get_id();
+    n.dest = n2->get_id();
+    n.label = label;
+    n.table = Table(table);
+    n.id = id;
+    
+    edges.insert(n);
+    n1->add_connection(n2);
+
+}
+
 
 void Graph::serialize(){
     json j;
@@ -116,7 +129,7 @@ void Graph::deserialize(std::string filename){
         Node n(nodeData["name"] , nodeData["type"], nodeId);
 
         //insert table data back into node
-        json table = nodeData["table"];
+        TableData table = (TableData) nodeData["table"];
         for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
             n.table.insert_row(it2.key(), it2.value());
         }
@@ -141,19 +154,11 @@ void Graph::deserialize(std::string filename){
      for (json::iterator it = edges.begin(); it != edges.end(); ++it){
          
         json edge_data = it.value();
-     
-        std::string _n1 = it.key().substr(0, it.key().find("->"));
-        std::string _n2 = it.key().substr(it.key().find("->")+2, -1);
+        Node n1 = nodeMap.at(edge_data["source"]);
+        Node n2 = nodeMap.at(edge_data["dest"]);
 
-        Node n1 = nodeMap.at(_n1);
-        Node n2 = nodeMap.at(_n2);
-
-        json table = edge_data["table"];
-        // for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
-        //     table[it2.key()] = it2.value();
-        // }
-
-        this->add_edge(&n1, &n2, edge_data["label"], table);
+        TableData table = (TableData) edge_data["table"];
+        this->add_edge(&n1, &n2, edge_data["label"], table, it.key());
 
     }
     

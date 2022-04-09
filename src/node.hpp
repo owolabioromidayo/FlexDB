@@ -44,7 +44,7 @@ struct Edge{
     std::string label;
     std::string source;
     std::string dest;
-    std::string id;
+    std::string id = sole::uuid4().str();
     Table table;
 
     bool operator<(const Edge& rhs) const{

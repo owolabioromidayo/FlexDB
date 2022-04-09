@@ -13,13 +13,12 @@ class Graph{
         Graph(std::string iname);
 
         void add_node(Node nnode);
-
         void add_edge(Node* n1, Node* n2, std::string label, TableData table);
+        void add_edge(Node* n1, Node* n2, std::string label, TableData table, std::string id);
 
         void serialize();
         void deserialize(std::string filename);
 
-        
         void set_name(std::string newName);
         std::string get_name();
 
