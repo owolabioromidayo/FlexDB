@@ -20,16 +20,14 @@ class Graph{
         void delete_node(std::string id);
 
         Node& get_node(std::string id);
-        std::vector<Node>  get_nodes_by_type(std::string type);
-        // void get_nodes_by_name(std::string name);
+        std::vector<std::string> get_node_ids_by_type(std::string type);
+        std::vector<std::string> get_node_ids_by_name(std::string name);
 
-        // void get_edge(std::string id);
-        // void get_edge(std::string source, std::string dest, std::string label);
-        // void get_edges_by_label(std::string label);
-        // void get_edges_by_source(std::string source);
-        // void get_edges_by_dest(std::string dest);
-
-
+        Edge& get_edge(std::string id);
+        std::string get_edge_id(std::string source, std::string dest, std::string label);
+        std::vector<std::string> get_edge_ids_by_label(std::string label);
+        std::vector<std::string> get_edge_ids_by_source(std::string source);
+        std::vector<std::string> get_edge_ids_by_dest(std::string dest);
 
         void serialize();
         void deserialize(std::string filename);
@@ -42,7 +40,6 @@ class Graph{
     private:
         std::string name;
         std::unordered_map<std::string, Node> nodeMap{};
-        std::set<Edge> edges;
-
+        std::unordered_map<std::string, Edge> edgeMap{};
 };
 #endif // GRAPH_HPP_INCLUDED_
