@@ -13,7 +13,7 @@ class Graph{
         Graph(std::string iname);
 
         void add_node(Node nnode);
-        void add_edge(Node* n1, Node* n2, std::string label, int weight);
+        void add_edge(Node* n1, Node* n2, std::string label, Table table);
 
         void serialize();
         void deserialize(std::string filename);

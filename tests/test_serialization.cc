@@ -18,7 +18,7 @@ int main(){
 
     test.add_node(n2);
     test.add_node(n1);
-    test.add_edge(&n1, &n2, "sdvds", 4); 
+    test.add_edge(&n1, &n2, "sdvds", {{"strength_rel", "20"}, {"compose", "20"}}); 
 
     test.serialize();
 

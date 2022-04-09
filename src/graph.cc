@@ -27,12 +27,12 @@ void Graph::add_node(Node nnode){
     nodeMap.insert(std::make_pair(nodeId,  nnode));
 };
 
-void Graph::add_edge(Node* n1, Node* n2, std::string label, int weight){
+void Graph::add_edge(Node* n1, Node* n2, std::string label, Table table){
     Edge n;
     n.source = n1->get_name();
     n.dest = n2->get_name();
     n.label = label;
-    n.weight = weight;
+    n.table = table;
     n.id = n1->get_id() + "->" + n2->get_id();
 
     edges.insert(n);
@@ -79,9 +79,18 @@ void Graph::serialize(){
         std::string id = edgesIter->id;
 
         j["edges"][id]["label"] = edgesIter->label;
-        j["edges"][id]["weight"] = edgesIter->weight;
         j["edges"][id]["source"] = edgesIter->source;
         j["edges"][id]["dest"] = edgesIter->dest;
+        j["edges"][id]["table"] = {};  
+
+        std::map<std::string, std::string>::iterator tableIter;
+        Table table = edgesIter->table;
+        for(tableIter = table.begin(); tableIter != table.end(); tableIter++){
+            std::string key = tableIter->first;
+            std::string value = tableIter->second;
+            j["edges"][id]["table"][key] = value;
+        }
+
     }
 
     //save as graph name
@@ -141,7 +150,12 @@ void Graph::deserialize(std::string filename){
         Node n1 = nodeMap.at(_n1);
         Node n2 = nodeMap.at(_n2);
 
-        this->add_edge(&n1, &n2, edge_data["label"], edge_data["weight"]);
+        json table = edge_data["table"];
+        for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
+            table[it2.key()] = it2.value();
+        }
+
+        this->add_edge(&n1, &n2, edge_data["label"], table);
 
     }
     
@@ -161,7 +175,6 @@ void Graph::__repr__(){
   
         std::cout << "id " << it->id<< std::endl;
         std::cout << "label " << it->label<< std::endl;
-        std::cout << "weight " << it->weight<< std::endl;
         std::cout << "source " << it->source<< std::endl;
         std::cout << "dest " << it->dest<< std::endl;
 

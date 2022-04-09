@@ -56,14 +56,55 @@ struct Edge{
     std::string source;
     std::string dest;
     std::string id;
-    // std::string _id = sole::uuid4().str()
-    int weight;
+    Table table;
 
     bool operator<(const Edge& rhs) const{
-        if (weight < rhs.weight){
+        if (label < rhs.label){
             return true;
         }
         return false;
+    }
+
+
+    //table operations
+    Table get_table(){return table; }
+
+    void insert_row(std::string key, std::string value){
+        Table::iterator it;
+        it = table.find(key);
+        if(it == table.end()) 
+            table[key] = value;
+        else{
+            throw "Key already exists in Edge with source " + source + "and dest " + dest + "with Label " + label  + " and  ID" + id + ".";
+        }
+    }
+
+    void edit_row(std::string key, std::string value){
+        table[key] = value;
+    }
+
+    void delete_row(std::string key, std::string value){
+        table.erase(key);
+    }
+
+    std::string get_row(std::string key){
+        Table::iterator it;
+        it = table.find(key);
+        if(it == table.end()) 
+            return "";
+        else
+            return it->second;
+    }
+
+    void clear_row(std::string key){
+        Table::iterator it;
+        it = table.find(key);
+        if(it != table.end()) 
+            table[key] = "";
+    }
+
+    void clear_table(){
+        table.clear();
     }
 
 };

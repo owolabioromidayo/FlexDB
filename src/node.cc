@@ -84,7 +84,14 @@ Table Node::get_table(){
 }
 
 void Node::insert_row(std::string key, std::string value){
-    table[key] = value;
+    Table::iterator it;
+    it = table.find(key);
+    if(it == table.end()) 
+        table[key] = value;
+    else{
+        throw "Key already exists in Node " +   name + ", Type " + type + "ID " + id + ".";
+    }
+   
 }
 
 void Node::edit_row(std::string key, std::string value){

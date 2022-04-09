@@ -5,4 +5,5 @@
 typedef std::map<std::string, std::string> Table;
 
 
+
 #endif //TYPES_HPP_INCLUDED_
