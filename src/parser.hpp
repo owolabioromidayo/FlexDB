@@ -6,10 +6,7 @@
 
 #include "graph.cc"
 #include "node.cc"
-
-
-typedef std::vector<Node> NodeList;
-typedef std::vector<Edge> EdgeList;
+#include "types.hpp"
 
 
 class Parser{
@@ -77,6 +74,30 @@ class Parser{
         NodeList curr_nodes = {};
         bool isV = true; //does current instruction concern g.E() or g.V() 
 
+        std::set<std::string> end_ops = {"out","values", "fold", "count", "limit" };
+        std::set<std::string> collection_ops = {"V","E"};
+        std::set<std::string> mutation_ops = {"addNode", "addEdge", "delNode", "delEdge", "getEdge", "getNode"};
+        std::set<std::string> inference_ops = {"groupCount","groupCountBy", "has", "hasLabel", "rankBy" };
+        std::set<std::string> traversal_ops = {"out","path"};
+
+        std::set<std::string> all_ops;
+        void init_all_ops();
+
+        std:unordered_map<std::string, std::vector<std::string>> f_args = {
+            {"V", {}},
+            {"E", {}},
+            {"out", {}},
+            {"values", {}},
+            {"fold", {}},
+            {"limit", {"number"}}, // convertible to int
+            {"groupCount", {}},
+            {"groupCountBy", {"string"}}, // 'arg'
+            {"has", {"list"}} // [a1,a2,a3]
+
+            //how do we typecheck nodes and edges, havent finished proto yet
+
+        }
+
         NodeList V(); // set currEdges
         EdgeList E(); // set currNodes
 
@@ -95,6 +116,7 @@ class Parser{
         void delEdge(Edge n_edge);
 
     
+        //inference ops
         void groupCount();
         void groupCountBy(std::string label);
         
@@ -119,9 +141,12 @@ class Parser{
 
 
         void repl();
-        bool is_valid_expr(std::string); // check if query expression is valid
+        bool is_valid_expr(std::string expr); // check if query expression is valid
         void resolve_query(std::string query);
         void readGraph(std::string filename);
+
+
+
 
     /***
         out * Outgoing adjacent vertices.

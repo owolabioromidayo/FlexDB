@@ -1,7 +1,17 @@
 #ifndef TYPES_HPP_INCLUDED_
 #define TYPES_HPP_INCLUDED_
 
+#include <unordered_map>
+#include <map>
+#include <vector>
+#include <string>
+
 typedef std::map<std::string, std::string> TableData;
+
+struct ExprDetails{
+    std::vector<std::string> functions;
+    std::unordered_map<std::string, std::vector<std::string>> umap;
+};
 
 class Table{
 

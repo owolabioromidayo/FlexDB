@@ -278,3 +278,21 @@ std::vector<std::string> Graph::get_edge_ids_by_dest(std::string dest){
     }
     return matchingEdges;
 }
+
+
+NodeList Graph::get_nodes(){
+    NodeList V;
+    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it){
+        V.push_back(it->second);
+    }
+    return V;
+}
+
+EdgeList Graph::get_edges(){
+    EdgeList E;
+    for(auto it= this->edgeMap.begin(); it != this->edgeMap.end(); ++it){
+        E.push_back(it->second);
+    }
+    return E;
+}
+

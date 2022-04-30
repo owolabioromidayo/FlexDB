@@ -8,6 +8,10 @@
 #include "types.hpp"
 #include "node.hpp"
 
+typedef std::vector<Node> NodeList;
+typedef std::vector<Edge> EdgeList;
+
+
 class Graph{
     public:
         Graph(std::string iname);
@@ -20,10 +24,12 @@ class Graph{
         void delete_node(std::string id);
 
         Node& get_node(std::string id);
+        NodeList get_nodes();
         std::vector<std::string> get_node_ids_by_type(std::string type);
         std::vector<std::string> get_node_ids_by_name(std::string name);
 
         Edge& get_edge(std::string id);
+        EdgeList get_edges();
         std::string get_edge_id(std::string source, std::string dest, std::string label);
         std::vector<std::string> get_edge_ids_by_label(std::string label);
         std::vector<std::string> get_edge_ids_by_source(std::string source);
