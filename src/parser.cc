@@ -4,10 +4,8 @@
 #include <stdexcept>
 #include <algorithm>
 
-#include "node.hpp"
-#include "utils.cc"
-#include "types.hpp"
 #include "parser.hpp"
+#include "utils.cc"
 
 
 Parser::Parser(Graph g){
@@ -24,8 +22,7 @@ Parser::Parser(){
         std::cin >> filename;
 
         try{
-            this->readGraph();
-            done = true;
+            done = this->readGraph(filename);
         }
         catch(std::invalid_argument& e){
             std::cout << "File could not be loaded.";
@@ -37,25 +34,22 @@ Parser::Parser(){
 }
 
 void Parser::init_all_ops(){
-    all_ops.insert(
-    end_ops.begin(), end_ops.end(), 
-    collection_ops.begin(), collection_ops.end(), 
-    inference_ops.begin(), inference_ops.end(),
-    traversal_ops.begin(), traversal_ops.end());
+    all_ops.insert(starting_ops.begin(), starting_ops.end()); 
 
-    for(int i=0; i<all_ops.size(); ++i){
-        std::cout << m.at(i) << "\n";
-    }
+    all_ops.insert(end_ops.begin(), end_ops.end()); 
+    all_ops.insert(collection_ops.begin(), collection_ops.end()); 
+    all_ops.insert(inference_ops.begin(), inference_ops.end()); 
+    all_ops.insert(traversal_ops.begin(), traversal_ops.end()); 
+
 }
 
-void Parser::readGraph(std::string filename){
+bool Parser::readGraph(std::string filename){
        try{
-            Graph g("__");
-            g.deserialize(filename);
-            this->g = g;
-            done = true;
+            this->g.deserialize(filename);
+            return true;
         } catch(int e){
-           throw std::invalid_argument("File does not exist.\n");
+        //    throw std::invalid_argument("File does not exist.\n");
+            return false;
         }
 }
 
@@ -69,62 +63,57 @@ EdgeList Parser::E(){
 
 
 bool Parser::is_valid_expr(std::string expr){
-    bool is_valid = false;
-    std::vector<std::string> functions = {};
-    std::unordered_map<std::string, std::vector<std::string>> mapped_expr = {};
-
-
+   
     //decompose expr
-    ExprDetails expr = utils::get_expr_map(expr);
-    std::vector<std::string> functions = expr.functions;
-    std::map<std::string, std::vector<std::string>> umap = expr.umap;
+    ExprDetails n_expr = utils::get_expr_map(expr);
+    std::vector<std::string> functions = n_expr.functions;
+    std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
 
     //return empty expr
     if(functions.size() < 2){
         return false;
     }
 
-    //do a simple pass to check if all ops are there before digging further
-    for(int i=0; i < functions.size(); ++i){
+    //do a simple pass to check if all ops are there before digging further 
+    for(int i=1; i < functions.size(); ++i){
         std::string curr = functions.at(i);
+    
         if(*std::find(all_ops.begin(), all_ops.end(), curr) != curr){
             return false;
         }
     }
 
     //check starting ops
-    if (functions.at(0) != "g"){
-        return false;
-    }
-
-    if(*std::find(all_ops.begin(), all_ops.end(), functions.at(1)) != functions.at(1)){
+    if(*std::find(starting_ops.begin(), starting_ops.end(), functions.at(0)) != functions.at(0)){
         return false;
     }
 
     //check ending ops
-    if(*std::find(end_ops.begin(), end_ops.end(), functions.at(1)) != functions.at(1)){
+    if(*std::find(end_ops.begin(), end_ops.end(), functions.back()) != functions.back()){
         return false;
     }
 
+    //check middle ops
+
     //check args, neglect g.
-    for(int i=0; i< functions.size(); i++){
-        std::string curr = functions.at(i);
+    // for(int i=0; i< functions.size(); i++){
+    //     std::string curr = functions.at(i);
 
-        std::vector<std::string> args = umap[curr];
-        std::vector<std::string> correct = f_args[curr];
+    //     std::vector<std::string> args = umap[curr];
+    //     std::vector<std::string> correct = this->f_args[curr];
 
-        //return if arg lengths dont match  
-        if(arg.size() != correct.size()){
-            return false
-        }
-    }
+    //     //return if arg lengths dont match  
+    //     if(args.size() != correct.size()){
+    //         return false;
+    //     }
+    // }
 
 
     //get function list chaining and check each fn args
 
     //iter -> check ssquencing
 
-    return is_valid;
+    return true;
 
 }
 

@@ -4,8 +4,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "graph.cc"
-#include "node.cc"
+#include "graph.hpp"
+#include "node.hpp"
 #include "types.hpp"
 
 
@@ -66,7 +66,8 @@ class Parser{
 
     private:
 
-        Graph g;
+      
+        Graph g {"temp"}; //becasue Graph g("temp") doesnt work , C++ is confused.
         EdgeList g_edges = {};
         NodeList g_nodes = {};
 
@@ -74,6 +75,7 @@ class Parser{
         NodeList curr_nodes = {};
         bool isV = true; //does current instruction concern g.E() or g.V() 
 
+        std::set<std::string> starting_ops = {"g"};
         std::set<std::string> end_ops = {"out","values", "fold", "count", "limit" };
         std::set<std::string> collection_ops = {"V","E"};
         std::set<std::string> mutation_ops = {"addNode", "addEdge", "delNode", "delEdge", "getEdge", "getNode"};
@@ -83,7 +85,7 @@ class Parser{
         std::set<std::string> all_ops;
         void init_all_ops();
 
-        std:unordered_map<std::string, std::vector<std::string>> f_args = {
+        std::unordered_map<std::string, std::vector<std::string>> f_args = {
             {"V", {}},
             {"E", {}},
             {"out", {}},
@@ -96,12 +98,12 @@ class Parser{
 
             //how do we typecheck nodes and edges, havent finished proto yet
 
-        }
+        };
 
         NodeList V(); // set currEdges
         EdgeList E(); // set currNodes
 
-        void has(std::string[] labels);
+        void has(std::string labels[]);
         void has(std::string property, std::string value); 
         void hasLabel(std::string label);
         void rankBy(std::string property, bool ascending = true);
@@ -143,7 +145,7 @@ class Parser{
         void repl();
         bool is_valid_expr(std::string expr); // check if query expression is valid
         void resolve_query(std::string query);
-        void readGraph(std::string filename);
+        bool readGraph(std::string filename);
 
 
 
@@ -169,7 +171,7 @@ class Parser{
     ***/
 
         
-}
+};
 
 
 #endif //PARSER_HPP_INCLUDED_

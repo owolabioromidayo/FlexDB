@@ -8,14 +8,15 @@
 #include "graph.hpp"
 
 
+
 using json = nlohmann::json;
 
 Graph::Graph(std::string iname){
-    name = iname;
+    this->name = iname;
 };
 
 void Graph::set_name(std::string newName){
-    name = newName;
+    this->name = newName;
 };
         
 std::string Graph::get_name(){

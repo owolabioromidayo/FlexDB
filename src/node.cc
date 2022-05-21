@@ -1,6 +1,7 @@
 #include <set>
 #include <map>
 #include <string>
+#include <iostream>
 
 #include "types.hpp"
 #include "node.hpp"
