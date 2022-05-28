@@ -88,6 +88,9 @@ bool Parser::is_valid_expr(std::string expr){
         return false;
     }
 
+    //check middle ops not starting or ending
+    //we really need to think about the networking of these functions
+
     //check ending ops
     if(*std::find(end_ops.begin(), end_ops.end(), functions.back()) != functions.back()){
         return false;
@@ -95,20 +98,58 @@ bool Parser::is_valid_expr(std::string expr){
 
     //check middle ops
 
-    //check args, neglect g.
-    // for(int i=0; i< functions.size(); i++){
-    //     std::string curr = functions.at(i);
+    //typecheck args using f_args
+    for(int i=0; i< functions.size(); i++){
+        std::string curr = functions.at(i);
 
-    //     std::vector<std::string> args = umap[curr];
-    //     std::vector<std::string> correct = this->f_args[curr];
+        std::vector<std::string> args = umap[curr];
+        std::vector<std::string> correct = this->f_args[curr];
 
-    //     //return if arg lengths dont match  
-    //     if(args.size() != correct.size()){
-    //         return false;
-    //     }
-    // }
+        //return if arg lengths dont match  
+        if(args.size() != correct.size()){
+            return false;
+        }
 
+        //arg comparison
+        for(int i=0; i< args.size(); ++i ){ 
+            //here we try to see if we can convert the types going down from least likely
+            std::string curr_arg = args[i];
+            std::string curr_type = correct[i];
 
+            if (curr_type.compare("int") == 0)
+            {
+                    //try convert string -> int
+                    try
+                    {
+                        int x = stoi(curr_arg);
+                    }
+                    catch(int e)
+                    { 
+                        return false;
+                    }
+                    
+            } 
+            else if (curr_type.compare("list<int>") == 0)
+            {
+                //try parse [1,2,34] exp -> member type must also be specified
+                int l = curr_arg.length();
+                if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']')){
+                    return false;
+                }
+                //try break the list into its args lists must be of the form [a | b | c], 
+                //cant use , inside because we already split by that
+
+            } 
+            else if(curr_type.compare("string") == 0)
+            {
+                continue;
+            }else
+            {
+                //unaccepted type
+                return false;
+            }
+        }
+    }
     //get function list chaining and check each fn args
 
     //iter -> check ssquencing

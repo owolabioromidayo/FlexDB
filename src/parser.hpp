@@ -91,11 +91,13 @@ class Parser{
             {"out", {}},
             {"values", {}},
             {"fold", {}},
-            {"limit", {"number"}}, // convertible to int
+            {"count", {}},
+            {"limit", {"int"}}, // convertible to int
             {"groupCount", {}},
             {"groupCountBy", {"string"}}, // 'arg'
-            {"has", {"list"}} // [a1,a2,a3]
-
+            {"has", {"list<int>"}}, // [a1,a2,a3]
+            {"hasLabel", {"string"}},
+            {"rankBy", {"string"}} //string -> label
             //how do we typecheck nodes and edges, havent finished proto yet
 
         };
