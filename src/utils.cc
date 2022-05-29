@@ -25,7 +25,7 @@ namespace utils {
     }
 
     std::string trim_spaces(std::string str){
-        const char* typeOfWhitespaces = " tnrfv";
+        const char* typeOfWhitespaces = " ";
         str.erase(str.find_last_not_of(typeOfWhitespaces) + 1);
         str.erase(0,str.find_first_not_of(typeOfWhitespaces));
 

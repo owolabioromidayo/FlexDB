@@ -35,7 +35,6 @@ Parser::Parser(){
 
 void Parser::init_all_ops(){
     all_ops.insert(starting_ops.begin(), starting_ops.end()); 
-
     all_ops.insert(end_ops.begin(), end_ops.end()); 
     all_ops.insert(collection_ops.begin(), collection_ops.end()); 
     all_ops.insert(inference_ops.begin(), inference_ops.end()); 
@@ -48,7 +47,7 @@ bool Parser::readGraph(std::string filename){
             this->g.deserialize(filename);
             return true;
         } catch(int e){
-        //    throw std::invalid_argument("File does not exist.\n");
+            throw std::invalid_argument("File does not exist.\n");
             return false;
         }
 }
@@ -157,8 +156,29 @@ bool Parser::is_valid_expr(std::string expr){
                     std::cout << curr_arg << " is not of type list<int>" << std::endl;
                     return false;
                 }
-                //try break the list into its args lists must be of the form [a | b | c], 
-                //cant use , inside because we already split by that
+                try{
+                    std::string without_brackets = "";
+                    std::vector<std::string> args = {};
+                    for (int i = 1; i < curr_arg.length() -1 ; i++){ //neglect braces
+                        without_brackets += curr_arg[i];
+                    } 
+
+                    std::vector<std::string> ls = utils::split(without_brackets, "|");
+                    for (int i = 0; i < ls.size(); i++){ //neglect braces
+                        ls[i] = utils::trim_spaces(ls[i]);
+                        //check if all are of type int
+                        try{
+                            int x = stoi(ls[i]);
+                        }catch(int e){
+                            std::cout << "Cannot convert list items of " << curr_arg << " to type int \n";
+                            return false;
+                        }
+                    } 
+                } 
+                catch(int e) 
+                { 
+                    return false;
+                }
 
             } 
             else if (curr_type.compare("list<string>") == 0)
@@ -167,6 +187,26 @@ bool Parser::is_valid_expr(std::string expr){
                 int l = curr_arg.length();
                 if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']')){
                     std::cout << curr_arg << " is not of type list<string>" << std::endl;
+                    return false;
+                }
+
+                try{
+                    std::string without_brackets = "";
+                    std::vector<std::string> args = {};
+                    for (int i = 1; i < curr_arg.length() -1 ; i++){ //neglect braces
+                        without_brackets += curr_arg[i];
+                    } 
+                    std::cout << "Without brackets" <<  without_brackets << std::endl;
+
+                    std::vector<std::string> ls = utils::split(without_brackets, "|");
+                    for (int i = 0; i < ls.size(); i++){ //neglect braces
+                        ls[i] = utils::trim_spaces(ls[i]);
+                        std::cout << ls[i] << "|" << std::endl;
+                    } 
+                } 
+                catch(int e) 
+                { 
+                    std::cout << curr_arg << " is not in list form \n";
                     return false;
                 }
             } 
@@ -182,9 +222,6 @@ bool Parser::is_valid_expr(std::string expr){
             }
         }
     }
-    //get function list chaining and check each fn args
-
-    //iter -> check ssquencing
 
     return true;
 
