@@ -139,11 +139,25 @@ bool Parser::is_valid_expr(std::string expr){
                     //try convert string -> int
                     try
                     {
-                        int x = stoi(curr_arg);
+                        int x = std::stoi(curr_arg);
                     }
                     catch(int e)
                     { 
                         std::cout << "Cannot convert " << curr_arg << " to type int" << std::endl;
+                        return false;
+                    }
+                    
+            } 
+            else if (curr_type.compare("float") == 0)
+            {
+                    //try convert string -> int
+                    try
+                    {
+                        float x = std::stof(curr_arg);
+                    }
+                    catch(int e)
+                    { 
+                        std::cout << "Cannot convert " << curr_arg << " to type float" << std::endl;
                         return false;
                     }
                     
@@ -168,9 +182,42 @@ bool Parser::is_valid_expr(std::string expr){
                         ls[i] = utils::trim_spaces(ls[i]);
                         //check if all are of type int
                         try{
-                            int x = stoi(ls[i]);
+                            int x = std::stoi(ls[i]);
                         }catch(int e){
                             std::cout << "Cannot convert list items of " << curr_arg << " to type int \n";
+                            return false;
+                        }
+                    } 
+                } 
+                catch(int e) 
+                { 
+                    return false;
+                }
+
+            } 
+            else if (curr_type.compare("list<float>") == 0)
+            {
+                //try parse [1,2,34] exp -> member type must also be specified
+                int l = curr_arg.length();
+                if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']')){
+                    std::cout << curr_arg << " is not of type list<float>" << std::endl;
+                    return false;
+                }
+                try{
+                    std::string without_brackets = "";
+                    std::vector<std::string> args = {};
+                    for (int i = 1; i < curr_arg.length() -1 ; i++){ //neglect braces
+                        without_brackets += curr_arg[i];
+                    } 
+
+                    std::vector<std::string> ls = utils::split(without_brackets, "|");
+                    for (int i = 0; i < ls.size(); i++){ //neglect braces
+                        ls[i] = utils::trim_spaces(ls[i]);
+                        //check if all are of type int
+                        try{
+                            int x = std::stof(ls[i]);
+                        }catch(int e){
+                            std::cout << "Cannot convert list items of " << curr_arg << " to type float\n";
                             return false;
                         }
                     } 
