@@ -69,8 +69,10 @@ bool Parser::is_valid_expr(std::string expr){
     std::vector<std::string> functions = n_expr.functions;
     std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
 
+    std::cout << "Validating expr " << expr << std::endl;
     //return empty expr
     if(functions.size() < 2){
+        std::cout << "Query is not long enough" << std::endl;
         return false;
     }
 
@@ -79,12 +81,14 @@ bool Parser::is_valid_expr(std::string expr){
         std::string curr = functions.at(i);
     
         if(*std::find(all_ops.begin(), all_ops.end(), curr) != curr){
+            std::cout << "Function " << curr << " is not in argument list" << std::endl;
             return false;
         }
     }
 
     //check starting ops
     if(*std::find(starting_ops.begin(), starting_ops.end(), functions.at(0)) != functions.at(0)){
+        std::cout << "Cannot start query with function " << functions.at(0) << std::endl ;
         return false;
     }
 
@@ -93,10 +97,21 @@ bool Parser::is_valid_expr(std::string expr){
 
     //check ending ops
     if(*std::find(end_ops.begin(), end_ops.end(), functions.back()) != functions.back()){
+        std::cout << "Cannot end query with function " << functions.back() << std::endl ;
         return false;
     }
 
-    //check middle ops
+    for(int i=1; i < functions.size() - 1; ++i) //these are the middle ops
+    {
+        std::string curr_func = functions.at(i);
+        std::string prev_func = functions.at(i-1);
+
+        if( *std::find(this->prev_map[curr_func].begin(), this->prev_map[curr_func].end(), prev_func) != prev_func) //this means chain is invalid
+        {
+            std::cout << "Function " << prev_func << " cannot precede " << curr_func << std::endl;
+            return false;
+        }
+    }
 
     //typecheck args using f_args
     for(int i=0; i< functions.size(); i++){
@@ -106,8 +121,12 @@ bool Parser::is_valid_expr(std::string expr){
         std::vector<std::string> correct = this->f_args[curr];
 
         //return if arg lengths dont match  
-        if(args.size() != correct.size()){
-            return false;
+        if(correct.size() == 0 ){
+            std::cout << "Neglecting args for function " << curr << std::endl;
+            continue;
+        }else if(args.size() != correct.size()){
+            std::cout << "Argument lists at function " << curr << " dont match you:func " << args.size() <<" : " << correct.size() << std::endl;
+            // return false;
         }
 
         //arg comparison
@@ -125,6 +144,7 @@ bool Parser::is_valid_expr(std::string expr){
                     }
                     catch(int e)
                     { 
+                        std::cout << "Cannot convert " << curr_arg << " to type int" << std::endl;
                         return false;
                     }
                     
@@ -134,18 +154,30 @@ bool Parser::is_valid_expr(std::string expr){
                 //try parse [1,2,34] exp -> member type must also be specified
                 int l = curr_arg.length();
                 if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']')){
+                    std::cout << curr_arg << " is not of type list<int>" << std::endl;
                     return false;
                 }
                 //try break the list into its args lists must be of the form [a | b | c], 
                 //cant use , inside because we already split by that
 
             } 
+            else if (curr_type.compare("list<string>") == 0)
+            {
+                //try parse [1,2,34] exp -> member type must also be specified
+                int l = curr_arg.length();
+                if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']')){
+                    std::cout << curr_arg << " is not of type list<string>" << std::endl;
+                    return false;
+                }
+            } 
+            
             else if(curr_type.compare("string") == 0)
             {
                 continue;
             }else
             {
                 //unaccepted type
+                std::cout << "Unaccepted type " << curr_type << std::endl; 
                 return false;
             }
         }

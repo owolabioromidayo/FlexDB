@@ -12,60 +12,7 @@
 class Parser{
     //based on Gremlin Query Language for Graph Databases
 
-    
-    /** 
-        example queries
-        g.V().has("name","Jane Doe").out("knows").values("name")
-
-        g.V().match(as("song").out("sungBy").as("artist"),
-        as("song").out("writtenBy").as("writer"),as("artist").
-        has("name","Garcia"),where(as("song").values("performances").
-        is(gt(300)))).select("song","writer").by("name")
-
-        Graph graph = GraphFactory.open(...);
-        GraphTraversalSource g = traversal().withEmbedded(graph);
-
-         double avg = g.V().has("name",name).
-         out("knows").out("created").
-         values(property).mean().next();
-
-        System.out.printIn("Average rating :" +avg);
-
-
-        gremlin> g.V(marko).out('knows').values('name').path()
-        ==>[v[1],v[2],vadas]
-        ==>[v[1],v[4],josh]
-
-
-        g.V().hasLabel('airport').values('code')
-
-        g.V().hasLabel('airport').groupCount().by('country')    // groupCountdby(label)
-
-
-        g.V().hasLabel('airport').has('code','DFW')
-
-        g.V().has('airport','code','DFW').values()
-        g.V().has('airport','code','DFW').values('city')
-
-
-        g.E().has('dist')
-        g.V().hasNot('region')
-
-
-        FOLLOWING 2 ARE THE SAME
-        g.E().hasLabel('route').count()
-        g.V().outE('route').count()
-
-
-        im not including the complex functions. maybe later
-
-
-        g.V().has('airport','code','AUS').out().values('code').fold()
-
-    **/
-
     private:
-
       
         Graph g {"temp"}; //becasue Graph g("temp") doesnt work , C++ is confused.
         EdgeList g_edges = {};
@@ -76,11 +23,11 @@ class Parser{
         bool isV = true; //does current instruction concern g.E() or g.V() 
 
         std::set<std::string> starting_ops = {"g"};
-        std::set<std::string> end_ops = {"out","values", "fold", "count", "limit" };
+        std::set<std::string> end_ops = {"out","values","count", "limit" };
         std::set<std::string> collection_ops = {"V","E"};
         std::set<std::string> mutation_ops = {"addNode", "addEdge", "delNode", "delEdge", "getEdge", "getNode"};
-        std::set<std::string> inference_ops = {"groupCount","groupCountBy", "has", "hasLabel", "rankBy" };
-        std::set<std::string> traversal_ops = {"out","path"};
+        std::set<std::string> inference_ops = {"groupCount","groupCountBy", "has", "hasNot", "rankBy" };
+        std::set<std::string> traversal_ops = {"out"};
 
         std::set<std::string> all_ops;
         void init_all_ops();
@@ -88,26 +35,40 @@ class Parser{
         std::unordered_map<std::string, std::vector<std::string>> f_args = {
             {"V", {}},
             {"E", {}},
-            {"out", {}},
-            {"values", {}},
-            {"fold", {}},
-            {"count", {}},
+            {"out", {}}, //print final output
+            {"values", {"string"}},
+            {"count", {}}, //get count of collection
             {"limit", {"int"}}, // convertible to int
             {"groupCount", {}},
             {"groupCountBy", {"string"}}, // 'arg'
-            {"has", {"list<int>"}}, // [a1,a2,a3]
-            {"hasLabel", {"string"}},
-            {"rankBy", {"string"}} //string -> label
+            {"has", {"list<string>"}}, // [a1,a2,a3]
+            {"hasNot", {"list<string>"}}, // [a1,a2,a3]
+            {"rankBy", {"string"}} //string -> label where value is int/float/string
             //how do we typecheck nodes and edges, havent finished proto yet
 
         };
+
+        std::unordered_map<std::string, std::vector<std::string>> prev_map = { //mapping of acceptable pre functions
+            {"g", {}}, 
+            {"V", {"g"}},
+            {"E", {"g"}},
+            {"out", {"limit", "has", "hasNot", "V", "E", "groupCount", "groupCountBy", "values"}},
+            {"values", {"out", "has", "V", "E"}},
+            {"count", {"V", "E", "hasNot", "has" }},
+            {"limit", {"V", "E", "has", "hasNot" }}, 
+            {"groupCount", {"has", "V", "E"}},
+            {"groupCountBy",  {"has", "V", "E"}},
+            {"has", {"V", "E"}}, 
+            {"hasNot", {"V", "E"}}, 
+            {"rankBy", {"has", "hasNot", "V", "E"}},
+        };
+
 
         NodeList V(); // set currEdges
         EdgeList E(); // set currNodes
 
         void has(std::string labels[]);
-        void has(std::string property, std::string value); 
-        void hasLabel(std::string label);
+        void hasNot(std::string labels[]);
         void rankBy(std::string property, bool ascending = true);
 
 
