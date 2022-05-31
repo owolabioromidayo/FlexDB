@@ -275,5 +275,45 @@ bool Parser::is_valid_expr(std::string expr){
 }
 
 void Parser::resolve_query(std::string query){
+    if (this->is_valid_expr(query)){
+        //get all functions and values again
+        ExprDetails n_expr = utils::get_expr_map(query);
+        std::vector<std::string> functions = n_expr.functions;
+        std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
 
+        for( int i=1; i< functions.size(); i++){
+            std::string curr_func = functions[i];
+            std::string prev_func = functions[i-1];
+            //so we need to store some local state so each function knows what to do based on the the previous
+            //each function will be executed in order, the real execution will be done in the functions themselves, all we have to do is pass the previous function name to them
+            //we also need to pass other arguments into these functions
+
+            std::string s_arg = "";
+            int int_arg = 0;
+            float float_arg = 0.0;
+            std::vector<std::string> string_list_arg = {};
+            std::vector<int> int_list_arg = {};
+            std::vector<float> float_list_arg = {};
+
+            //get all the args possible here based on current arg list
+
+            //based on the function, get and pass the types
+            std::cout << "Executing function " << curr_func << std::endl;
+            if(curr_func.compare("V") == 0) { this->V(prev_func);}
+            else if(curr_func.compare("V") == 0) { this->V(prev_func);}
+            else if(curr_func.compare("E") == 0) { this->E(prev_func);}
+            else if(curr_func.compare("out") == 0) { this->out(prev_func);}
+            else if(curr_func.compare("values") == 0) { this->values(prev_func, s_arg);}
+            else if(curr_func.compare("count") == 0) { this->count(prev_func);}
+            else if(curr_func.compare("limit") == 0) { this->limit(prev_func, int_arg);}
+            else if(curr_func.compare("groupCount") == 0) { this->groupCount(prev_func);}
+            else if(curr_func.compare("groupCountBy") == 0) { this->groupCountBy(prev_func, s_arg);}
+            else if(curr_func.compare("has") == 0) { this->has(prev_func, string_list_arg);}
+            else if(curr_func.compare("hasNot") == 0) { this->hasNot(prev_func, string_list_arg);}
+            else if(curr_func.compare("rankBy") == 0) { this->rankBy(prev_func, s_arg);}
+        }
+
+    }else{
+        std::cout << "Query not valid \n";
+    }
 }

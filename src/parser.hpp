@@ -64,40 +64,35 @@ class Parser{
         };
 
 
-        NodeList V(); // set currEdges
-        EdgeList E(); // set currNodes
+        NodeList V(std::string prev_func); // set currEdges
+        EdgeList E(std::string prev_func); // set currNodes
 
-        void has(std::string labels[]);
-        void hasNot(std::string labels[]);
-        void rankBy(std::string property, bool ascending = true);
+        void has(std::string prev_func, std::string labels[]);
+        void hasNot(std::string prev_func, std::string labels[]);
+        void rankBy(std::string prev_func, std::string property, bool ascending = true);
 
 
         //mutation ops
-        Node getNode(std::string id);
-        Edge getEdge(std::string id);
-        void addNode(Node nnode); // copy args of Graph.add
-        void addEdge(Edge n_edge);
-        void delNode(Node nnode);
-        void delEdge(Edge n_edge);
+        Node getNode(std::string prev_func, std::string id);
+        Edge getEdge(std::string prev_func, std::string id);
+        void addNode(std::string prev_func, Node nnode); // copy args of Graph.add
+        void addEdge(std::string prev_func, Edge n_edge);
+        void delNode(std::string prev_func,Node nnode);
+        void delEdge(std::string prev_func, Edge n_edge);
 
-    
-        //inference ops
-        void groupCount();
-        void groupCountBy(std::string label);
+
+        void groupCountBy(std::string prev_func, std::string label);
+        void groupCount(std::string prev_func);
         
 
         //end ops
-        void limit(int limit); // limits output of current list based on instruction
-        void unfold(); // display all info  
-        void fold(); // put it all in a list
-        void values(); //extract these values from curr;
-        void count(); //return count of curr items : g.V().count()
+        void limit(std::string prev_func, int limit); // limits output of current list based on instruction
+        void values(std::string prev_func, std::string label); //extract these values from curr;
+        void count(std::string prev_func); //return count of curr items : g.V().count()
 
 
         //traversal operations
-        void out(); // get vertices of outgoing edges with any label
-        void out(std::string label); // get vertices of outgoing edges with label
-        void path(); // get complete path of objects in relation to last item
+        void out(std::string prev_func); // print results 
         
 
     public:
