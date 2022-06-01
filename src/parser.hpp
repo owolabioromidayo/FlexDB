@@ -18,9 +18,19 @@ class Parser{
         EdgeList g_edges = {};
         NodeList g_nodes = {};
 
+
+        //for storing internal state
         EdgeList curr_edges = {};
         NodeList curr_nodes = {};
         bool isV = true; //does current instruction concern g.E() or g.V() 
+        std::unordered_map<std::string, std::vector<std::string>> valueMap; 
+        
+        Edge currEdge;
+        Node currNode;
+    
+        std::string out_header_string;
+
+
 
         std::set<std::string> starting_ops = {"g"};
         std::set<std::string> end_ops = {"out","values","count", "limit" };
@@ -36,7 +46,7 @@ class Parser{
             {"V", {}},
             {"E", {}},
             {"out", {}}, //print final output
-            {"values", {"string"}},
+            {"values", {"list<string>"}},
             {"count", {}}, //get count of collection
             {"limit", {"int"}}, // convertible to int
             {"groupCount", {}},
@@ -53,7 +63,7 @@ class Parser{
             {"V", {"g"}},
             {"E", {"g"}},
             {"out", {"limit", "has", "hasNot", "V", "E", "groupCount", "groupCountBy", "values"}},
-            {"values", {"out", "has", "V", "E"}},
+            {"values", {"has", "V", "E"}},
             {"count", {"V", "E", "hasNot", "has" }},
             {"limit", {"V", "E", "has", "hasNot" }}, 
             {"groupCount", {"has", "V", "E"}},
@@ -64,17 +74,17 @@ class Parser{
         };
 
 
-        NodeList V(std::string prev_func); // set currEdges
-        EdgeList E(std::string prev_func); // set currNodes
+        void V(std::string prev_func); // set currEdges
+        void E(std::string prev_func); // set currNodes
 
-        void has(std::string prev_func, std::string labels[]);
-        void hasNot(std::string prev_func, std::string labels[]);
+        void has(std::string prev_func, std::vector<std::string> labels);
+        void hasNot(std::string prev_func, std::vector<std::string> labels);
         void rankBy(std::string prev_func, std::string property, bool ascending = true);
 
 
         //mutation ops
-        Node getNode(std::string prev_func, std::string id);
-        Edge getEdge(std::string prev_func, std::string id);
+        void getNode(std::string prev_func, std::string id);
+        void getEdge(std::string prev_func, std::string id);
         void addNode(std::string prev_func, Node nnode); // copy args of Graph.add
         void addEdge(std::string prev_func, Edge n_edge);
         void delNode(std::string prev_func,Node nnode);
@@ -87,7 +97,7 @@ class Parser{
 
         //end ops
         void limit(std::string prev_func, int limit); // limits output of current list based on instruction
-        void values(std::string prev_func, std::string label); //extract these values from curr;
+        void values(std::string prev_func, std::vector<std::string> labels); //extract these values from curr;
         void count(std::string prev_func); //return count of curr items : g.V().count()
 
 

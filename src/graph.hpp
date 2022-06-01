@@ -35,6 +35,9 @@ class Graph{
         std::vector<std::string> get_edge_ids_by_source(std::string source);
         std::vector<std::string> get_edge_ids_by_dest(std::string dest);
 
+        NodeList get_nodes_by_labels(std::vector<std::string> labels);
+        EdgeList get_edges_by_label(std::string label);
+
         void serialize();
         void deserialize(std::string filename);
 

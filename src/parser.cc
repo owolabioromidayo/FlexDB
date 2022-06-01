@@ -8,13 +8,14 @@
 #include "utils.cc"
 
 
-Parser::Parser(Graph g){
+Parser::Parser(Graph g)
+{
     this->g = g;
     this->init_all_ops();
 }
 
-Parser::Parser(){
-
+Parser::Parser()
+{
     bool done = false;
     while(!done){
         std::string filename = "";
@@ -30,39 +31,33 @@ Parser::Parser(){
     }
 
     this->init_all_ops();
-   
 }
 
-void Parser::init_all_ops(){
+void Parser::init_all_ops()
+{
     all_ops.insert(starting_ops.begin(), starting_ops.end()); 
     all_ops.insert(end_ops.begin(), end_ops.end()); 
     all_ops.insert(collection_ops.begin(), collection_ops.end()); 
     all_ops.insert(inference_ops.begin(), inference_ops.end()); 
     all_ops.insert(traversal_ops.begin(), traversal_ops.end()); 
-
 }
 
-bool Parser::readGraph(std::string filename){
-       try{
+bool Parser::readGraph(std::string filename)
+{
+       try
+       {
             this->g.deserialize(filename);
             return true;
-        } catch(int e){
+        } 
+        catch(int e)
+        {
             throw std::invalid_argument("File does not exist.\n");
             return false;
         }
 }
 
-NodeList Parser::V(){
-    return this->g.get_nodes();
-}
-
-EdgeList Parser::E(){
-    return this->g.get_edges();
-}
-
-
-bool Parser::is_valid_expr(std::string expr){
-   
+bool Parser::is_valid_expr(std::string expr)
+{ 
     //decompose expr
     ExprDetails n_expr = utils::get_expr_map(expr);
     std::vector<std::string> functions = n_expr.functions;
@@ -70,23 +65,27 @@ bool Parser::is_valid_expr(std::string expr){
 
     std::cout << "Validating expr " << expr << std::endl;
     //return empty expr
-    if(functions.size() < 2){
+    if(functions.size() < 2)
+    {
         std::cout << "Query is not long enough" << std::endl;
         return false;
     }
 
     //do a simple pass to check if all ops are there before digging further 
-    for(int i=1; i < functions.size(); ++i){
+    for(int i=1; i < functions.size(); ++i)
+    {
         std::string curr = functions.at(i);
     
-        if(*std::find(all_ops.begin(), all_ops.end(), curr) != curr){
+        if(*std::find(all_ops.begin(), all_ops.end(), curr) != curr)
+        {
             std::cout << "Function " << curr << " is not in argument list" << std::endl;
             return false;
         }
     }
 
     //check starting ops
-    if(*std::find(starting_ops.begin(), starting_ops.end(), functions.at(0)) != functions.at(0)){
+    if(*std::find(starting_ops.begin(), starting_ops.end(), functions.at(0)) != functions.at(0))
+    {
         std::cout << "Cannot start query with function " << functions.at(0) << std::endl ;
         return false;
     }
@@ -95,7 +94,8 @@ bool Parser::is_valid_expr(std::string expr){
     //we really need to think about the networking of these functions
 
     //check ending ops
-    if(*std::find(end_ops.begin(), end_ops.end(), functions.back()) != functions.back()){
+    if(*std::find(end_ops.begin(), end_ops.end(), functions.back()) != functions.back())
+    {
         std::cout << "Cannot end query with function " << functions.back() << std::endl ;
         return false;
     }
@@ -113,23 +113,27 @@ bool Parser::is_valid_expr(std::string expr){
     }
 
     //typecheck args using f_args
-    for(int i=0; i< functions.size(); i++){
+    for(int i=0; i< functions.size(); i++)
+    {
         std::string curr = functions.at(i);
 
         std::vector<std::string> args = umap[curr];
         std::vector<std::string> correct = this->f_args[curr];
 
         //return if arg lengths dont match  
-        if(correct.size() == 0 ){
+        if(correct.size() == 0 )
+        {
             std::cout << "Neglecting args for function " << curr << std::endl;
             continue;
-        }else if(args.size() != correct.size()){
+        }else if(args.size() != correct.size())
+        {
             std::cout << "Argument lists at function " << curr << " dont match you:func " << args.size() <<" : " << correct.size() << std::endl;
             // return false;
         }
 
         //arg comparison
-        for(int i=0; i< args.size(); ++i ){ 
+        for(int i=0; i< args.size(); ++i )
+        { 
             //here we try to see if we can convert the types going down from least likely
             std::string curr_arg = args[i];
             std::string curr_type = correct[i];
@@ -173,12 +177,14 @@ bool Parser::is_valid_expr(std::string expr){
                 try{
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
-                    for (int i = 1; i < curr_arg.length() -1 ; i++){ //neglect braces
+                    for (int i = 1; i < curr_arg.length() -1 ; i++)
+                    { //neglect braces
                         without_brackets += curr_arg[i];
                     } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
-                    for (int i = 0; i < ls.size(); i++){ //neglect braces
+                    for (int i = 0; i < ls.size(); i++)
+                    { //neglect braces
                         ls[i] = utils::trim_spaces(ls[i]);
                         //check if all are of type int
                         try{
@@ -199,19 +205,22 @@ bool Parser::is_valid_expr(std::string expr){
             {
                 //try parse [1,2,34] exp -> member type must also be specified
                 int l = curr_arg.length();
-                if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']')){
+                if(!(curr_arg[0] == '[' && curr_arg[l-1] == ']'))
+                {
                     std::cout << curr_arg << " is not of type list<float>" << std::endl;
                     return false;
                 }
                 try{
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
-                    for (int i = 1; i < curr_arg.length() -1 ; i++){ //neglect braces
+                    for (int i = 1; i < curr_arg.length() -1 ; i++)
+                    { //neglect braces
                         without_brackets += curr_arg[i];
                     } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
-                    for (int i = 0; i < ls.size(); i++){ //neglect braces
+                    for (int i = 0; i < ls.size(); i++)
+                    { //neglect braces
                         ls[i] = utils::trim_spaces(ls[i]);
                         //check if all are of type int
                         try{
@@ -240,13 +249,15 @@ bool Parser::is_valid_expr(std::string expr){
                 try{
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
-                    for (int i = 1; i < curr_arg.length() -1 ; i++){ //neglect braces
+                    for (int i = 1; i < curr_arg.length() -1 ; i++)
+                    { //neglect braces
                         without_brackets += curr_arg[i];
                     } 
                     std::cout << "Without brackets" <<  without_brackets << std::endl;
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
-                    for (int i = 0; i < ls.size(); i++){ //neglect braces
+                    for (int i = 0; i < ls.size(); i++)
+                    { //neglect braces
                         ls[i] = utils::trim_spaces(ls[i]);
                         std::cout << ls[i] << "|" << std::endl;
                     } 
@@ -274,14 +285,17 @@ bool Parser::is_valid_expr(std::string expr){
 
 }
 
-void Parser::resolve_query(std::string query){
-    if (this->is_valid_expr(query)){
+void Parser::resolve_query(std::string query)
+{
+    if (this->is_valid_expr(query))
+    {
         //get all functions and values again
         ExprDetails n_expr = utils::get_expr_map(query);
         std::vector<std::string> functions = n_expr.functions;
         std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
 
-        for( int i=1; i< functions.size(); i++){
+        for( int i=1; i< functions.size(); i++)
+        {
             std::string curr_func = functions[i];
             std::string prev_func = functions[i-1];
             //so we need to store some local state so each function knows what to do based on the the previous
@@ -303,7 +317,7 @@ void Parser::resolve_query(std::string query){
             else if(curr_func.compare("V") == 0) { this->V(prev_func);}
             else if(curr_func.compare("E") == 0) { this->E(prev_func);}
             else if(curr_func.compare("out") == 0) { this->out(prev_func);}
-            else if(curr_func.compare("values") == 0) { this->values(prev_func, s_arg);}
+            else if(curr_func.compare("values") == 0) { this->values(prev_func, string_list_arg);}
             else if(curr_func.compare("count") == 0) { this->count(prev_func);}
             else if(curr_func.compare("limit") == 0) { this->limit(prev_func, int_arg);}
             else if(curr_func.compare("groupCount") == 0) { this->groupCount(prev_func);}
@@ -311,9 +325,123 @@ void Parser::resolve_query(std::string query){
             else if(curr_func.compare("has") == 0) { this->has(prev_func, string_list_arg);}
             else if(curr_func.compare("hasNot") == 0) { this->hasNot(prev_func, string_list_arg);}
             else if(curr_func.compare("rankBy") == 0) { this->rankBy(prev_func, s_arg);}
+            else
+            {
+                //ideally we would raise an error
+                std::cout << "Function " << curr_func << "has no implementation.\n";
+            }
         }
 
     }else{
         std::cout << "Query not valid \n";
     }
 }
+
+
+
+void Parser::V(std::string prev_func)
+{
+    if (prev_func == "g")
+    {
+        this->isV = true;
+        this->curr_nodes =  this->g.get_nodes();
+    }
+    else
+    {
+        //errors
+    }
+}
+
+void Parser::E(std::string prev_func)
+{
+    if (prev_func == "g")
+    {
+        this->isV = false;
+        this->curr_edges = this->g.get_edges();
+    }
+    else
+    {
+        //errors
+    }
+}
+
+
+void Parser::values(std::string prev_func, std::vector<std::string> labels)
+{
+    std::string label;
+    std::string table_value;
+    this->out_header_string = "";
+
+    if (this->isV)
+    {
+        this->out_header_string = "ID\tName";
+        for(auto it = this->curr_nodes.begin(); it != this->curr_nodes.end(); ++it)
+        {
+            Node node = *it;
+            std::string nodeId = node.get_id();
+            this->valueMap[nodeId] = {nodeId, node.get_name()};
+            for (auto it2 = labels.begin(); it2 != labels.end(); ++it2)
+            {
+                label = *it2;
+                this->out_header_string += "\t" + label;
+                table_value = node.table.get_row(label);
+                this->valueMap[nodeId].push_back(table_value);
+            }
+        }
+    }
+    else 
+    {
+        this->out_header_string = "ID\tLabel\tSource\tDest";
+        for(auto it = this->curr_edges.begin(); it != this->curr_edges.end(); ++it)
+        {
+            Edge edge = *it;
+            std::string edgeId = edge.id;
+            this->valueMap[edgeId] = {edge.id, edge.label, edge.source, edge.dest};
+            for (auto it2 = labels.begin(); it2 != labels.end(); ++it2)
+            {
+                label = *it2;
+                this->out_header_string += "\t" + label;
+                table_value = edge.table.get_row(label);
+                this->valueMap[edgeId].push_back(table_value);
+            }
+        }
+    }
+}
+
+
+void Parser::has(std::string prev_func, std::vector<std::string> labels)
+{
+    if (this->isV )
+    {
+        this->curr_nodes = this->g.get_nodes_by_labels(labels);
+    }
+    else
+    {
+        if(labels.size() > 1)
+        {
+            std::cout << "Edges cannot have more than one label";
+            return;
+        }
+        this->curr_edges = this->g.get_edges_by_label(labels[0]);
+    }
+
+}
+
+
+void Parser::out(std::string prev_func)
+{
+    std::cout << this->out_header_string << std::endl;
+    if(prev_func == "values")
+    {
+       for(auto it = this->valueMap.begin(); it != valueMap.end(); ++it)
+       {
+          for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
+          {
+              std::cout << *it2 << "\t";
+          }
+          std::cout << "\n";
+       }
+    }
+}
+
+

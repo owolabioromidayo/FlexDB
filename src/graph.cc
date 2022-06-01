@@ -257,6 +257,19 @@ std::vector<std::string> Graph::get_edge_ids_by_label(std::string label){
     return matchingEdges;
 }
 
+EdgeList Graph::get_edges_by_label(std::string label){
+    std::vector<std::string> matchingEdges;
+    EdgeList E;
+
+    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){  
+        Edge currEdge = it->second;
+        if (currEdge.label == label){
+            E.push_back(currEdge);
+        }
+    }
+    return E;
+}
+
 std::vector<std::string> Graph::get_edge_ids_by_source(std::string source){
     std::vector<std::string> matchingEdges;
     for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){  
@@ -289,11 +302,39 @@ NodeList Graph::get_nodes(){
     return V;
 }
 
+
+
 EdgeList Graph::get_edges(){
     EdgeList E;
     for(auto it= this->edgeMap.begin(); it != this->edgeMap.end(); ++it){
         E.push_back(it->second);
     }
     return E;
+}
+
+
+NodeList Graph::get_nodes_by_labels(std::vector<std::string> labels)
+{
+    NodeList V;
+    bool hasLabels = false;
+    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
+    {
+        for(auto it2 = labels.begin(); it2 != labels.end(); ++it2)
+        {
+            if (it->second.table.get_row(*it2) == "")
+            {
+                hasLabels = false;
+                break;
+            }
+        }
+
+        if (hasLabels)
+        {
+            V.push_back(it->second);
+            hasLabels = false;
+        }
+        
+    }
+    return V;
 }
 
