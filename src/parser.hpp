@@ -29,6 +29,8 @@ class Parser{
         Node currNode;
     
         std::string out_header_string;
+        int _count = 0;
+        int _limit = 0;
 
 
 
@@ -103,6 +105,8 @@ class Parser{
 
         //traversal operations
         void out(std::string prev_func); // print results 
+
+        
         
 
     public:

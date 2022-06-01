@@ -178,13 +178,13 @@ bool Parser::is_valid_expr(std::string expr)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { //neglect braces
+                    { 
                         without_brackets += curr_arg[i];
                     } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
-                    { //neglect braces
+                    {
                         ls[i] = utils::trim_spaces(ls[i]);
                         //check if all are of type int
                         try{
@@ -214,13 +214,13 @@ bool Parser::is_valid_expr(std::string expr)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { //neglect braces
+                    { 
                         without_brackets += curr_arg[i];
                     } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
-                    { //neglect braces
+                    { 
                         ls[i] = utils::trim_spaces(ls[i]);
                         //check if all are of type int
                         try{
@@ -250,14 +250,14 @@ bool Parser::is_valid_expr(std::string expr)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { //neglect braces
+                    { 
                         without_brackets += curr_arg[i];
                     } 
                     std::cout << "Without brackets" <<  without_brackets << std::endl;
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
-                    { //neglect braces
+                    { 
                         ls[i] = utils::trim_spaces(ls[i]);
                         std::cout << ls[i] << "|" << std::endl;
                     } 
@@ -294,22 +294,96 @@ void Parser::resolve_query(std::string query)
         std::vector<std::string> functions = n_expr.functions;
         std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
 
+        //reset internal state
+        this->_count = 0;
+        this->_limit = 0;
+        this->curr_edges = {};
+        this->curr_nodes = {};
+        this->isV = true;
+        
+        std::string s_arg = "";
+        int int_arg = 0;
+        float float_arg = 0.0;
+        std::vector<std::string> string_list_arg = {};
+        std::vector<int> int_list_arg = {};
+        std::vector<float> float_list_arg = {};
+
+        std::vector<std::string> curr_arg;
+        std::string curr_arg_type;
+
         for( int i=1; i< functions.size(); i++)
         {
             std::string curr_func = functions[i];
             std::string prev_func = functions[i-1];
-            //so we need to store some local state so each function knows what to do based on the the previous
-            //each function will be executed in order, the real execution will be done in the functions themselves, all we have to do is pass the previous function name to them
-            //we also need to pass other arguments into these functions
+            curr_arg = umap[curr_func];
+            curr_arg_type = f_args[curr_func];
 
-            std::string s_arg = "";
-            int int_arg = 0;
-            float float_arg = 0.0;
-            std::vector<std::string> string_list_arg = {};
-            std::vector<int> int_list_arg = {};
-            std::vector<float> float_list_arg = {};
+            if(curr_arg_type == "string")
+            {
+                s_arg = curr_arg[0];
+            }
+            else if(curr_arg_type == "int")
+            {
+                int_arg = std::stoi(curr_arg[0]);
+            }
+            else if(curr_arg_type == "float")
+            {
+                float_arg = std::stof(curr_arg[0]);
+            }
+            else if(curr_arg_type == "list<string>")
+            {
+                std::string without_brackets = "";
+                std::vector<std::string> args = {};
+                for (int i = 1; i < curr_arg.length() -1 ; i++)
+                { 
+                    without_brackets += curr_arg[i];
+                } 
+                
+                std::vector<std::string> ls = utils::split(without_brackets, "|");
+                for (int i = 0; i < ls.size(); i++)
+                { 
+                    ls[i] = utils::trim_spaces(ls[i]);
+                    std::cout << ls[i] << "|" << std::endl;
+                } 
 
-            //get all the args possible here based on current arg list
+                string_list_arg = ls;
+            }
+            else if(curr_arg_type == "list<float>")
+            {
+                float_list_arg = {};
+                std::string without_brackets = "";
+                std::vector<std::string> args = {};
+                for (int i = 1; i < curr_arg.length() -1 ; i++)
+                { 
+                    without_brackets += curr_arg[i];
+                } 
+                std::vector<std::string> ls = utils::split(without_brackets, "|");
+                for (int i = 0; i < ls.size(); i++)
+                { 
+                    ls[i] = utils::trim_spaces(ls[i]);
+                    float_list_arg.push_back(std::stof(ls[i]));
+                    }
+            }
+            
+            else if(curr_arg_type == "list<int>")
+            {
+                int_list_arg = {};
+                std::string without_brackets = "";
+                std::vector<std::string> args = {};
+                for (int i = 1; i < curr_arg.length() -1 ; i++)
+                { 
+                    without_brackets += curr_arg[i];
+                } 
+
+                std::vector<std::string> ls = utils::split(without_brackets, "|");
+                for (int i = 0; i < ls.size(); i++)
+                {
+                    ls[i] = utils::trim_spaces(ls[i]);
+                    int_list_arg.push_back(std::stoi(ls[i]));
+                    
+                } 
+            }
+           
 
             //based on the function, get and pass the types
             std::cout << "Executing function " << curr_func << std::endl;
@@ -339,30 +413,17 @@ void Parser::resolve_query(std::string query)
 
 
 
+
 void Parser::V(std::string prev_func)
 {
-    if (prev_func == "g")
-    {
-        this->isV = true;
-        this->curr_nodes =  this->g.get_nodes();
-    }
-    else
-    {
-        //errors
-    }
+    this->isV = true;
+    this->curr_nodes =  this->g.get_nodes();
 }
 
 void Parser::E(std::string prev_func)
 {
-    if (prev_func == "g")
-    {
-        this->isV = false;
-        this->curr_edges = this->g.get_edges();
-    }
-    else
-    {
-        //errors
-    }
+    this->isV = false;
+    this->curr_edges = this->g.get_edges();
 }
 
 
@@ -442,6 +503,48 @@ void Parser::out(std::string prev_func)
           std::cout << "\n";
        }
     }
+    else if(prev_func == "count")
+    {
+        std::cout << this->_count << std::endl;
+    }
 }
 
+void Parser::count(std::string prev_func)
+{
+    this->out_header_string = "";
+    if(this->isV)
+    {
+        this->_count = this->curr_nodes.size();
+    }
+    else{
+        this->_count = this->curr_edges.size();
+    }
+}
 
+void Parser::limit(std::string prev_func, int limit)
+{
+    this->_limit = limit;
+    if(this->isV)
+    {
+        if (limit < this->curr_nodes.size())
+        {
+            this->curr_nodes = std::vector<Nodes>(this->curr_nodes.begin(), this->curr_nodes.begin() + limit);    
+        }
+        else
+        {
+            std::cout << "Limit is greater than vector size \n";
+        }
+    }
+    else
+    {
+        //truncate
+        if (limit < this->curr_edges.size())
+        {
+            this->curr_edges= std::vector<Edges>(this->curr_edges.begin(), this->curr_edges.begin() + limit);    
+        }
+        else
+        {
+            std::cout << "Limit is greater than vector size \n";
+        }
+    }
+}
