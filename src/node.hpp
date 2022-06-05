@@ -1,15 +1,14 @@
 #ifndef NODE_HPP_INCLUDED_
 #define NODE_HPP_INCLUDED_
 
-
 #include <string>
 #include <set>
 
 #include "types.hpp"
 #include "../lib/sole/sole.hpp"
 
-class Node{
-
+class Node
+{
     public:
         Table table;
 
@@ -41,23 +40,23 @@ class Node{
         
 };
 
-struct Edge{
+struct Edge
+{
     std::string label;
     std::string source;
     std::string dest;
     std::string id = sole::uuid4().str();
     Table table;
 
-    bool operator<(const Edge& rhs) const{
-        if (label < rhs.label){
+    bool operator<(const Edge& rhs) const
+    {
+        if (label < rhs.label)
             return true;
-        }
         return false;
     }
 
-
-    void __repr__() const{
-
+    void __repr__() const
+    {
         std::cout << "Representation for Edge "<< id << " with Label "<< label << std::endl;
 
         std::cout << "\tid " << id<< std::endl;
@@ -67,11 +66,9 @@ struct Edge{
 
         std::cout << "\tTABLE" << "\n";
         TableData _table = this->table.get_table();
-        for(TableData::iterator it = _table.begin(); it != _table.end(); ++it){
+        for(TableData::iterator it = _table.begin(); it != _table.end(); ++it)
             std::cout << "\t\t"<<it->first << " : "<<  it->second << std::endl;
-        }
     }
-
 };
 
 #endif //NODE_HPP_INCLUDED_

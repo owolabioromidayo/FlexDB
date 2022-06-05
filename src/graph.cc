@@ -11,23 +11,28 @@
 
 using json = nlohmann::json;
 
-Graph::Graph(std::string iname){
+Graph::Graph(std::string iname)
+{
     this->name = iname;
 };
 
-void Graph::set_name(std::string newName){
+void Graph::set_name(std::string newName)
+{
     this->name = newName;
 };
         
-std::string Graph::get_name(){
+std::string Graph::get_name()
+{
     return name;
 };
 
-void Graph::add_node(Node nnode){ 
+void Graph::add_node(Node nnode)
+{ 
     nodeMap.insert(std::make_pair(nnode.get_id(),  nnode));
 };
 
-void Graph::add_edge(std::string id1, std::string id2, std::string label, TableData table){
+void Graph::add_edge(std::string id1, std::string id2, std::string label, TableData table)
+{
     Edge n;
     n.source = id1;
     n.dest = id2;
@@ -43,7 +48,8 @@ void Graph::add_edge(std::string id1, std::string id2, std::string label, TableD
 
 }
 
-void Graph::add_edge(std::string id1, std::string id2, std::string label, TableData table, std::string id){
+void Graph::add_edge(std::string id1, std::string id2, std::string label, TableData table, std::string id)
+{
     Edge n;
     n.source = id1;
     n.dest = id2;
@@ -60,16 +66,17 @@ void Graph::add_edge(std::string id1, std::string id2, std::string label, TableD
     it->second.add_connection(id2);
 }
 
-void Graph::delete_node(std::string id){
+void Graph::delete_node(std::string id)
+{
     this->nodeMap.erase(id);
     auto it =  edgeMap.begin();
-    while(it != edgeMap.end()){
+    while(it != edgeMap.end())
+    {
         Edge currEdge = it->second;
-        if (currEdge.source == id || currEdge.dest == id){
+        if (currEdge.source == id || currEdge.dest == id)
             it = edgeMap.erase(it);
-        }else{
+        else
             ++it;
-        }
     }
 }
 
@@ -78,7 +85,8 @@ void Graph::serialize(){
     json j;
     std::unordered_map<std::string, Node>::iterator iter; 
 
-    for(iter = nodeMap.begin(); iter != nodeMap.end(); iter++){
+    for(iter = nodeMap.begin(); iter != nodeMap.end(); iter++)
+    {
         Node currNode = iter->second;
         std::string nodeId = currNode.get_id();
 
@@ -90,7 +98,8 @@ void Graph::serialize(){
 
         std::map<std::string, std::string>::iterator tableIter;
         TableData table = currNode.table.get_table();
-        for(tableIter = table.begin(); tableIter != table.end(); tableIter++){
+        for(tableIter = table.begin(); tableIter != table.end(); tableIter++)
+        {
             std::string key = tableIter->first;
             std::string value = tableIter->second;
             j["nodes"][nodeId]["table"][key] = value;
@@ -101,12 +110,11 @@ void Graph::serialize(){
         std::vector<std::string> vectorisedConnections(connections.size());
         std::copy(connections.begin(), connections.end(), vectorisedConnections.begin());
         j["nodes"][nodeId]["connections"] = vectorisedConnections;
-
-
     }
 
     //store connections directly from edges set in graph
-    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){
+    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
+    {
         Edge currEdge = it->second;
         std::string id = currEdge.id;
 
@@ -117,12 +125,12 @@ void Graph::serialize(){
 
         std::map<std::string, std::string>::iterator tableIter;
         TableData table = currEdge.table.get_table();
-        for(tableIter = table.begin(); tableIter != table.end(); tableIter++){
+        for(tableIter = table.begin(); tableIter != table.end(); tableIter++)
+        {
             std::string key = tableIter->first;
             std::string value = tableIter->second;
             j["edges"][id]["table"][key] = value;
         }
-
     }
 
     //save as graph name
@@ -130,41 +138,40 @@ void Graph::serialize(){
     out.open(name + ".json");
     out << j.dump(4) << std::endl;
     out.close();
-
 }
     
 
-void Graph::deserialize(std::string filename){
-   
+void Graph::deserialize(std::string filename)
+{
     std::ifstream i(filename);
     json j;
     i >> j;
 
     json nodes = j["nodes"];
     //create new nodes
-    for (json::iterator it = nodes.begin(); it != nodes.end(); ++it){
+    for (json::iterator it = nodes.begin(); it != nodes.end(); ++it)
+    {
         std::string nodeId= it.key();
         json nodeData = it.value();
 
         Node n(nodeData["name"] , nodeData["type"], nodeId);
         //insert table data back into node
         json table = nodeData["table"];
-        for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2){
+        for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2)
             n.table.insert_row(it2.key(), it2.value());
-        }
 
         //insert connections back
         json connections = nodeData["connections"];
-        for (json::iterator it2 = connections.begin(); it2 != connections.end(); ++it2){
+        for (json::iterator it2 = connections.begin(); it2 != connections.end(); ++it2)
             n.add_connection(*it2);
-        }
 
         this->add_node(n);
     }
 
     //rebuild edges
-     json edges = j["edges"];
-     for (json::iterator it = edges.begin(); it != edges.end(); ++it){
+    json edges = j["edges"];
+    for (json::iterator it = edges.begin(); it != edges.end(); ++it)
+    {
         json edgeData = it.value();
         TableData table = (TableData) edgeData["table"];
         this->add_edge(edgeData["source"], edgeData["source"], edgeData["label"], table, it.key());
@@ -173,145 +180,141 @@ void Graph::deserialize(std::string filename){
 }
 
 
-void Graph::__repr__(){
+void Graph::__repr__()
+{
     std::cout << "Representation for graph "<< name << "." << std::endl;
-
     std::cout << "\nNodes" << std::endl;
-    for(auto it = nodeMap.begin(); it != nodeMap.end(); ++it){
+    for(auto it = nodeMap.begin(); it != nodeMap.end(); ++it)
+    {
         it->second.__repr__();
         std::cout<< "\n";
     }
     std::cout << "Edges" << std::endl;
-    for( auto it = edgeMap.begin(); it != edgeMap.end(); ++it){
+    for( auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
         it->second.__repr__();
-    }
 }
-
-
 
 //GETTERS
-Node& Graph::get_node(std::string id){
+Node& Graph::get_node(std::string id)
+{
     auto it = nodeMap.find(id);
-    if (it == nodeMap.end()){
+    if (it == nodeMap.end())
         throw "Node of id " + id + " does not exist."; 
-    }
-    else{
+    else
         return  it->second;
-    }
 }
 
-std::vector<std::string> Graph::get_node_ids_by_type (std::string type){
+std::vector<std::string> Graph::get_node_ids_by_type (std::string type)
+{
     std::vector<std::string> matchingNodes;
-    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it){
+    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
+    {
        Node currNode = it->second;
-       if (currNode.get_type() == type){
+       if (currNode.get_type() == type)
            matchingNodes.push_back(currNode.get_id());
-       }
     }
     return matchingNodes;
 } 
 
 
-std::vector<std::string> Graph::get_node_ids_by_name(std::string name){
+std::vector<std::string> Graph::get_node_ids_by_name(std::string name)
+{
     std::vector<std::string> matchingNodes;
-    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it){
+    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
+    {
        Node currNode = it->second;
-       if (currNode.get_name() == name){
+       if (currNode.get_name() == name)
            matchingNodes.push_back(currNode.get_id());
-       }
     }
     return matchingNodes;
 } 
 
-Edge& Graph::get_edge(std::string id){
+Edge& Graph::get_edge(std::string id)
+{
     auto it = edgeMap.find(id);
-    if (it == edgeMap.end()){
+    if (it == edgeMap.end())
         throw "Edge of id " + id + " does not exist."; 
-    }
-    else{
+    else
         return  it->second;
-    }
 }
 
-
-
- std::string Graph::get_edge_id(std::string source, std::string dest, std::string label){
-     for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){
+ std::string Graph::get_edge_id(std::string source, std::string dest, std::string label)
+ {
+     for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
+     {
          Edge currEdge = it->second;
-         if(currEdge.source == source  && currEdge.dest == dest && currEdge.label == label){
+         if(currEdge.source == source  && currEdge.dest == dest && currEdge.label == label)
              return currEdge.id;
-         }
      }
      throw "Edge of Source: " + source + ", Dest: " + dest + " and Label: " + label + " does not exist.";
  }
 
 
-std::vector<std::string> Graph::get_edge_ids_by_label(std::string label){
+std::vector<std::string> Graph::get_edge_ids_by_label(std::string label)
+{
     std::vector<std::string> matchingEdges;
-    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){  
+    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
+    {  
         Edge currEdge = it->second;
-        if (currEdge.label == label){
+        if (currEdge.label == label)
             matchingEdges.push_back(currEdge.id);
-        }
     }
     return matchingEdges;
 }
 
-EdgeList Graph::get_edges_by_label(std::string label){
+EdgeList Graph::get_edges_by_label(std::string label)
+{
     std::vector<std::string> matchingEdges;
     EdgeList E;
 
-    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){  
+    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
+    {  
         Edge currEdge = it->second;
-        if (currEdge.label == label){
+        if (currEdge.label == label)
             E.push_back(currEdge);
-        }
     }
     return E;
 }
 
-std::vector<std::string> Graph::get_edge_ids_by_source(std::string source){
+std::vector<std::string> Graph::get_edge_ids_by_source(std::string source)
+{
     std::vector<std::string> matchingEdges;
-    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){  
+    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
+    {  
         Edge currEdge = it->second;
-        if (currEdge.source == source){
+        if (currEdge.source == source)
             matchingEdges.push_back(currEdge.id);
-        }
     }
     return matchingEdges;
 }
 
-
-std::vector<std::string> Graph::get_edge_ids_by_dest(std::string dest){
+std::vector<std::string> Graph::get_edge_ids_by_dest(std::string dest)
+{
     std::vector<std::string> matchingEdges;
-    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it){  
+    for(auto it = edgeMap.begin(); it != edgeMap.end(); ++it)
+    {  
         Edge currEdge = it->second;
-        if (currEdge.dest == dest){
+        if (currEdge.dest == dest)
             matchingEdges.push_back(currEdge.id);
-        }
     }
     return matchingEdges;
 }
 
-
-NodeList Graph::get_nodes(){
+NodeList Graph::get_nodes()
+{
     NodeList V;
-    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it){
+    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
         V.push_back(it->second);
-    }
     return V;
 }
 
-
-
-EdgeList Graph::get_edges(){
+EdgeList Graph::get_edges()
+{
     EdgeList E;
-    for(auto it= this->edgeMap.begin(); it != this->edgeMap.end(); ++it){
+    for(auto it= this->edgeMap.begin(); it != this->edgeMap.end(); ++it)
         E.push_back(it->second);
-    }
     return E;
 }
-
 
 NodeList Graph::get_nodes_by_labels(std::vector<std::string> labels)
 {
@@ -327,13 +330,11 @@ NodeList Graph::get_nodes_by_labels(std::vector<std::string> labels)
                 break;
             }
         }
-
         if (hasLabels)
         {
             V.push_back(it->second);
             hasLabels = false;
         }
-        
     }
     return V;
 }

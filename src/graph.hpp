@@ -11,13 +11,12 @@
 typedef std::vector<Node> NodeList;
 typedef std::vector<Edge> EdgeList;
 
-
-class Graph{
+class Graph
+{
     public:
         Graph(std::string iname);
 
         void add_node(Node nnode);
-
         void add_edge(std::string id1, std::string id2, std::string label, TableData table);
         void add_edge(std::string id1,std::string id2, std::string label, TableData table, std::string id);
 

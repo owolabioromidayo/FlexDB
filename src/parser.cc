@@ -126,10 +126,8 @@ bool Parser::is_valid_expr(std::string expr)
             std::cout << "Neglecting args for function " << curr << std::endl;
             continue;
         }else if(args.size() != correct.size())
-        {
             std::cout << "Argument lists at function " << curr << " dont match you:func " << args.size() <<" : " << correct.size() << std::endl;
             // return false;
-        }
 
         //arg comparison
         for(int i=0; i< args.size(); ++i )
@@ -178,9 +176,7 @@ bool Parser::is_valid_expr(std::string expr)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { 
                         without_brackets += curr_arg[i];
-                    } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
@@ -214,9 +210,7 @@ bool Parser::is_valid_expr(std::string expr)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { 
                         without_brackets += curr_arg[i];
-                    } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
@@ -250,9 +244,7 @@ bool Parser::is_valid_expr(std::string expr)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { 
                         without_brackets += curr_arg[i];
-                    } 
                     std::cout << "Without brackets" <<  without_brackets << std::endl;
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
@@ -270,9 +262,8 @@ bool Parser::is_valid_expr(std::string expr)
             } 
             
             else if(curr_type.compare("string") == 0)
-            {
                 continue;
-            }else
+            else
             {
                 //unaccepted type
                 std::cout << "Unaccepted type " << curr_type << std::endl; 
@@ -326,25 +317,17 @@ void Parser::resolve_query(std::string query)
                 curr_arg_type = f_args[curr_func][0];
 
                 if(curr_arg_type == "string")
-                {
                     s_arg = curr_arg;
-                }
                 else if(curr_arg_type == "int")
-                {
                     int_arg = std::stoi(curr_arg);
-                }
                 else if(curr_arg_type == "float")
-                {
                     float_arg = std::stof(curr_arg);
-                }
                 else if(curr_arg_type == "list<string>")
                 {
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { 
                         without_brackets += curr_arg[i];
-                    } 
                     
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
@@ -361,15 +344,13 @@ void Parser::resolve_query(std::string query)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { 
                         without_brackets += curr_arg[i];
-                    } 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
                     { 
                         ls[i] = utils::trim_spaces(ls[i]);
                         float_list_arg.push_back(std::stof(ls[i]));
-                        }
+                    }
                 }
                 
                 else if(curr_arg_type == "list<int>")
@@ -378,23 +359,18 @@ void Parser::resolve_query(std::string query)
                     std::string without_brackets = "";
                     std::vector<std::string> args = {};
                     for (int i = 1; i < curr_arg.length() -1 ; i++)
-                    { 
                         without_brackets += curr_arg[i];
-                    } 
 
                     std::vector<std::string> ls = utils::split(without_brackets, "|");
                     for (int i = 0; i < ls.size(); i++)
                     {
                         ls[i] = utils::trim_spaces(ls[i]);
                         int_list_arg.push_back(std::stoi(ls[i]));
-                        
                     } 
                 }
             }
             else
-           {
                std::cout << "Neglecting args for function " << curr_func << std::endl;
-           }
 
             //based on the function, get and pass the types
             std::cout << "Executing function " << curr_func << std::endl;
@@ -409,11 +385,8 @@ void Parser::resolve_query(std::string query)
             else if(curr_func.compare("has") == 0) { this->has(prev_func, string_list_arg);}
             else if(curr_func.compare("hasNot") == 0) { this->hasNot(prev_func, string_list_arg);}
             else if(curr_func.compare("rankBy") == 0) { this->rankBy(prev_func, s_arg);}
-            else
-            {
-                //ideally we would raise an error
+            else  //ideally we would raise an error
                 std::cout << "Function " << curr_func << "has no implementation.\n";
-            }
         }
 
     }else{
@@ -483,9 +456,7 @@ void Parser::values(std::string prev_func, std::vector<std::string> labels)
 void Parser::has(std::string prev_func, std::vector<std::string> labels)
 {
     if (this->isV )
-    {
         this->curr_nodes = this->g.get_nodes_by_labels(labels);
-    }
     else
     {
         if(labels.size() > 1)
@@ -507,28 +478,21 @@ void Parser::out(std::string prev_func)
        for(auto it = this->valueMap.begin(); it != valueMap.end(); ++it)
        {
           for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2)
-          {
               std::cout << *it2 << "\t";
-          }
           std::cout << "\n";
        }
     }
     else if(prev_func == "count")
-    {
         std::cout << this->_count << std::endl;
-    }
 }
 
 void Parser::count(std::string prev_func)
 {
     this->out_header_string = "";
     if(this->isV)
-    {
         this->_count = this->curr_nodes.size();
-    }
-    else{
+    else
         this->_count = this->curr_edges.size();
-    }
 }
 
 void Parser::limit(std::string prev_func, int limit)
@@ -537,25 +501,17 @@ void Parser::limit(std::string prev_func, int limit)
     if(this->isV)
     {
         if (limit < this->curr_nodes.size())
-        {
             this->curr_nodes = std::vector<Node>(this->curr_nodes.begin(), this->curr_nodes.begin() + limit);    
-        }
         else
-        {
             std::cout << "Limit is greater than vector size \n";
-        }
     }
     else
     {
         //truncate
         if (limit < this->curr_edges.size())
-        {
             this->curr_edges= std::vector<Edge>(this->curr_edges.begin(), this->curr_edges.begin() + limit);    
-        }
         else
-        {
             std::cout << "Limit is greater than vector size \n";
-        }
     }
 }
 

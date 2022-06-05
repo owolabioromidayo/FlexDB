@@ -8,16 +8,14 @@
 #include "graph.hpp"
 #include "types.hpp"
 
-
-class Parser{
-    //based on Gremlin Query Language for Graph Databases
-
+class Parser
+{
+    //LOOSELY based on Gremlin Query Language for Graph Databases
     private:
       
         Graph g {"temp"}; //becasue Graph g("temp") doesnt work , C++ is confused.
         EdgeList g_edges = {};
         NodeList g_nodes = {};
-
 
         //for storing internal state
         EdgeList curr_edges = {};
@@ -31,8 +29,6 @@ class Parser{
         std::string out_header_string;
         int _count = 0;
         int _limit = 0;
-
-
 
         std::set<std::string> starting_ops = {"g"};
         std::set<std::string> end_ops = {"out","values","count", "limit" };
@@ -95,19 +91,14 @@ class Parser{
 
         void groupCountBy(std::string prev_func, std::string label);
         void groupCount(std::string prev_func);
-        
 
         //end ops
         void limit(std::string prev_func, int limit); // limits output of current list based on instruction
         void values(std::string prev_func, std::vector<std::string> labels); //extract these values from curr;
         void count(std::string prev_func); //return count of curr items : g.V().count()
 
-
         //traversal operations
         void out(std::string prev_func); // print results 
-
-        
-        
 
     public:
         Parser(); // functions should be restricted without a graph ERR no graph, init with empty graph
@@ -118,10 +109,6 @@ class Parser{
         bool is_valid_expr(std::string expr); // check if query expression is valid
         void resolve_query(std::string query);
         bool readGraph(std::string filename);
-
-
-
-
     /***
         out * Outgoing adjacent vertices.
 
@@ -142,7 +129,6 @@ class Parser{
         otherV The vertex that was not the vertex we came from.
     ***/
 
-        
 };
 
 
