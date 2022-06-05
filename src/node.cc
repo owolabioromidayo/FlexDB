@@ -8,7 +8,14 @@
 
 
 //constructors
-Node::Node(std::string iname, std::string itype){
+Node::Node()
+{
+    name = "Default";
+    type= "None";
+}
+
+Node::Node(std::string iname, std::string itype)
+{
     if (iname == ""){
         throw "Field 'Name' of Class Node cannot be empty.";
     }
@@ -19,7 +26,8 @@ Node::Node(std::string iname, std::string itype){
     type = itype;
 };
 
-Node::Node(std::string iname, std::string itype, std::string iid){
+Node::Node(std::string iname, std::string itype, std::string iid)
+{
     if (iname == ""){
         throw "Field 'Name' of Class Node cannot be empty.";
     }
@@ -36,7 +44,8 @@ Node::Node(std::string iname, std::string itype, std::string iid){
 };
 
 
-Node::Node(std::string iname, std::string itype, TableData itable){
+Node::Node(std::string iname, std::string itype, TableData itable)
+{
     if (iname == ""){
         throw "Field 'Name' of Class Node cannot be empty.";
     }
@@ -50,7 +59,8 @@ Node::Node(std::string iname, std::string itype, TableData itable){
 };
 
 
-Node::Node(std::string iname, std::string itype, TableData itable, std::set<std::string> connections){
+Node::Node(std::string iname, std::string itype, TableData itable, std::set<std::string> connections)
+{
     if (iname == ""){
         throw "Field 'Name' of Class Node cannot be empty.";
     }
@@ -66,34 +76,40 @@ Node::Node(std::string iname, std::string itype, TableData itable, std::set<std:
 
 
 //connection operations
-std::set<std::string> Node::get_connections(){
+std::set<std::string> Node::get_connections()
+{
     return connections;
 }
 
-void Node::add_connection(Node *n){
+void Node::add_connection(Node *n)
+{
     std::string id  = n->get_id();
     std::cout << "Adding connection " << id <<  std::endl;
     this->connections.insert(id);
 }
 
-void Node::add_connection(std::string n){
+void Node::add_connection(std::string n)
+{
     this->connections.insert(n);
 }
 
 //setters and getters
 
-void Node::__repr__(){
+void Node::__repr__()
+{
     std::cout << "\n";
     std::cout << "Representation for Node "<< name << " of Type "<< type << std::endl;
     std::cout << "\tConnections" << std::endl;
 
-    for(std::set<std::string>::iterator it = this->connections.begin(); it != this->connections.end(); ++it){
+    for(std::set<std::string>::iterator it = this->connections.begin(); it != this->connections.end(); ++it)
+    {
         std::cout << "\t\t" << *it << std::endl;
     }
 
     std::cout << "\tTable" << std::endl;
     TableData _table = table.get_table();
-    for( TableData::iterator it = _table.begin(); it != _table.end(); ++it){
+    for( TableData::iterator it = _table.begin(); it != _table.end(); ++it)
+    {
         std::cout << "\t\t" << it->first << " - " << it->second<< std::endl;  
     }
      

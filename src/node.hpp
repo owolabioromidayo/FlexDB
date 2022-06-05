@@ -14,6 +14,7 @@ class Node{
         Table table;
 
         //constructors
+        Node();
         Node(std::string iname, std::string itype);
         Node(std::string iname, std::string itype, std::string id);
         Node(std::string iname, std::string itype, TableData itable);

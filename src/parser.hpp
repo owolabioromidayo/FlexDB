@@ -4,8 +4,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "graph.hpp"
 #include "node.hpp"
+#include "graph.hpp"
 #include "types.hpp"
 
 

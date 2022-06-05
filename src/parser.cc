@@ -290,10 +290,12 @@ void Parser::resolve_query(std::string query)
     if (this->is_valid_expr(query))
     {
         //get all functions and values again
+        std::cout << "Extracting query details \n";
         ExprDetails n_expr = utils::get_expr_map(query);
         std::vector<std::string> functions = n_expr.functions;
         std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
 
+        std::cout << "Resetting internal state \n";
         //reset internal state
         this->_count = 0;
         this->_limit = 0;
@@ -308,87 +310,95 @@ void Parser::resolve_query(std::string query)
         std::vector<int> int_list_arg = {};
         std::vector<float> float_list_arg = {};
 
-        std::vector<std::string> curr_arg;
+        std::string curr_arg;
         std::string curr_arg_type;
 
+
+        std::cout << "Executing Queries \n";
         for( int i=1; i< functions.size(); i++)
         {
             std::string curr_func = functions[i];
             std::string prev_func = functions[i-1];
-            curr_arg = umap[curr_func];
-            curr_arg_type = f_args[curr_func];
-
-            if(curr_arg_type == "string")
-            {
-                s_arg = curr_arg[0];
-            }
-            else if(curr_arg_type == "int")
-            {
-                int_arg = std::stoi(curr_arg[0]);
-            }
-            else if(curr_arg_type == "float")
-            {
-                float_arg = std::stof(curr_arg[0]);
-            }
-            else if(curr_arg_type == "list<string>")
-            {
-                std::string without_brackets = "";
-                std::vector<std::string> args = {};
-                for (int i = 1; i < curr_arg.length() -1 ; i++)
-                { 
-                    without_brackets += curr_arg[i];
-                } 
-                
-                std::vector<std::string> ls = utils::split(without_brackets, "|");
-                for (int i = 0; i < ls.size(); i++)
-                { 
-                    ls[i] = utils::trim_spaces(ls[i]);
-                    std::cout << ls[i] << "|" << std::endl;
-                } 
-
-                string_list_arg = ls;
-            }
-            else if(curr_arg_type == "list<float>")
-            {
-                float_list_arg = {};
-                std::string without_brackets = "";
-                std::vector<std::string> args = {};
-                for (int i = 1; i < curr_arg.length() -1 ; i++)
-                { 
-                    without_brackets += curr_arg[i];
-                } 
-                std::vector<std::string> ls = utils::split(without_brackets, "|");
-                for (int i = 0; i < ls.size(); i++)
-                { 
-                    ls[i] = utils::trim_spaces(ls[i]);
-                    float_list_arg.push_back(std::stof(ls[i]));
-                    }
-            }
             
-            else if(curr_arg_type == "list<int>")
+            if (f_args[curr_func].size() > 0)
             {
-                int_list_arg = {};
-                std::string without_brackets = "";
-                std::vector<std::string> args = {};
-                for (int i = 1; i < curr_arg.length() -1 ; i++)
-                { 
-                    without_brackets += curr_arg[i];
-                } 
+                curr_arg = umap[curr_func][0];
+                curr_arg_type = f_args[curr_func][0];
 
-                std::vector<std::string> ls = utils::split(without_brackets, "|");
-                for (int i = 0; i < ls.size(); i++)
+                if(curr_arg_type == "string")
                 {
-                    ls[i] = utils::trim_spaces(ls[i]);
-                    int_list_arg.push_back(std::stoi(ls[i]));
+                    s_arg = curr_arg;
+                }
+                else if(curr_arg_type == "int")
+                {
+                    int_arg = std::stoi(curr_arg);
+                }
+                else if(curr_arg_type == "float")
+                {
+                    float_arg = std::stof(curr_arg);
+                }
+                else if(curr_arg_type == "list<string>")
+                {
+                    std::string without_brackets = "";
+                    std::vector<std::string> args = {};
+                    for (int i = 1; i < curr_arg.length() -1 ; i++)
+                    { 
+                        without_brackets += curr_arg[i];
+                    } 
                     
-                } 
+                    std::vector<std::string> ls = utils::split(without_brackets, "|");
+                    for (int i = 0; i < ls.size(); i++)
+                    { 
+                        ls[i] = utils::trim_spaces(ls[i]);
+                        std::cout << ls[i] << "|" << std::endl;
+                    } 
+
+                    string_list_arg = ls;
+                }
+                else if(curr_arg_type == "list<float>")
+                {
+                    float_list_arg = {};
+                    std::string without_brackets = "";
+                    std::vector<std::string> args = {};
+                    for (int i = 1; i < curr_arg.length() -1 ; i++)
+                    { 
+                        without_brackets += curr_arg[i];
+                    } 
+                    std::vector<std::string> ls = utils::split(without_brackets, "|");
+                    for (int i = 0; i < ls.size(); i++)
+                    { 
+                        ls[i] = utils::trim_spaces(ls[i]);
+                        float_list_arg.push_back(std::stof(ls[i]));
+                        }
+                }
+                
+                else if(curr_arg_type == "list<int>")
+                {
+                    int_list_arg = {};
+                    std::string without_brackets = "";
+                    std::vector<std::string> args = {};
+                    for (int i = 1; i < curr_arg.length() -1 ; i++)
+                    { 
+                        without_brackets += curr_arg[i];
+                    } 
+
+                    std::vector<std::string> ls = utils::split(without_brackets, "|");
+                    for (int i = 0; i < ls.size(); i++)
+                    {
+                        ls[i] = utils::trim_spaces(ls[i]);
+                        int_list_arg.push_back(std::stoi(ls[i]));
+                        
+                    } 
+                }
             }
-           
+            else
+           {
+               std::cout << "Neglecting args for function " << curr_func << std::endl;
+           }
 
             //based on the function, get and pass the types
             std::cout << "Executing function " << curr_func << std::endl;
             if(curr_func.compare("V") == 0) { this->V(prev_func);}
-            else if(curr_func.compare("V") == 0) { this->V(prev_func);}
             else if(curr_func.compare("E") == 0) { this->E(prev_func);}
             else if(curr_func.compare("out") == 0) { this->out(prev_func);}
             else if(curr_func.compare("values") == 0) { this->values(prev_func, string_list_arg);}
@@ -528,7 +538,7 @@ void Parser::limit(std::string prev_func, int limit)
     {
         if (limit < this->curr_nodes.size())
         {
-            this->curr_nodes = std::vector<Nodes>(this->curr_nodes.begin(), this->curr_nodes.begin() + limit);    
+            this->curr_nodes = std::vector<Node>(this->curr_nodes.begin(), this->curr_nodes.begin() + limit);    
         }
         else
         {
@@ -540,11 +550,31 @@ void Parser::limit(std::string prev_func, int limit)
         //truncate
         if (limit < this->curr_edges.size())
         {
-            this->curr_edges= std::vector<Edges>(this->curr_edges.begin(), this->curr_edges.begin() + limit);    
+            this->curr_edges= std::vector<Edge>(this->curr_edges.begin(), this->curr_edges.begin() + limit);    
         }
         else
         {
             std::cout << "Limit is greater than vector size \n";
         }
     }
+}
+
+void Parser::groupCount(std::string prev_func)
+{
+    //do nothing for now
+}
+
+void Parser::groupCountBy(std::string prev_func, std::string label)
+{
+    //do nothing for now
+}
+
+void Parser::hasNot(std::string prev_func, std::vector<std::string> labels)
+{
+    //do nothing for now
+}
+
+void Parser::rankBy(std::string prev_func, std::string property, bool ascending)
+{
+    //do nothing for now
 }
