@@ -1,8 +1,6 @@
-#include <fstream>
 #include <iostream>
-#include <cstdio>
 
-#include "../lib/json.hpp"
+// #include "../lib/json.hpp"
 #include "../src/node.cc"
 #include "../src/graph.cc"
 
@@ -18,15 +16,15 @@ int main(){
 
     test.add_node(n2);
     test.add_node(n1);
-    test.add_edge(&n1, &n2, "sdvds", {{"strength_rel", "20"}, {"compose", "20"}}); 
-
+    test.add_edge(n1.get_id(), n2.get_id(), "sdvds", {{"strength_rel", "20"}, {"compose", "20"}}); 
+ 
     test.serialize();
 
     Graph m("sdf");
     m.deserialize("mean.json"); 
     m.serialize();
 
-    std::cout << "Serialization Tests Passed! \n"; 
+    std::cout << "Serialization Tests Passed! \n";
 
 
     //Deletion
