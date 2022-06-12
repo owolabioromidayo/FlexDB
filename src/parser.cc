@@ -374,7 +374,7 @@ void Parser::resolve_query(std::string query)
 
             //based on the function, get and pass the types
             std::cout << "Executing function " << curr_func << std::endl;
-            if(curr_func.compare("V") == 0) { this->V(prev_func);}
+            if(curr_func.compare("V") == 0) { this->V(prev_func, s_arg);}
             else if(curr_func.compare("E") == 0) { this->E(prev_func);}
             else if(curr_func.compare("out") == 0) { this->out(prev_func);}
             else if(curr_func.compare("values") == 0) { this->values(prev_func, string_list_arg);}
@@ -395,12 +395,10 @@ void Parser::resolve_query(std::string query)
 }
 
 
-
-
-void Parser::V(std::string prev_func)
+void Parser::V(std::string prev_func, std::string type)
 {
     this->isV = true;
-    this->curr_nodes =  this->g.get_nodes();
+    this->curr_nodes =  this->g.get_nodes(type);
 }
 
 void Parser::E(std::string prev_func)

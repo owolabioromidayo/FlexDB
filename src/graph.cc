@@ -300,13 +300,25 @@ std::vector<std::string> Graph::get_edge_ids_by_dest(std::string dest)
     return matchingEdges;
 }
 
-NodeList Graph::get_nodes()
+NodeList Graph::get_nodes(std::string type = "")
 {
     NodeList V;
-    for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
-        V.push_back(it->second);
+    if(type == "")
+    {
+        for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
+            V.push_back(it->second);
+    }
+    else
+    {
+        for(auto it= this->nodeMap.begin(); it != this->nodeMap.end(); ++it)
+        {
+            if(it->second.get_type() == type)
+                V.push_back(it->second);
+        }
+    }
     return V;
 }
+
 
 EdgeList Graph::get_edges()
 {

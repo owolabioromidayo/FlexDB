@@ -41,7 +41,7 @@ class Parser
         void init_all_ops();
 
         std::unordered_map<std::string, std::vector<std::string>> f_args = {
-            {"V", {}},
+            {"V", {"string"}},
             {"E", {}},
             {"out", {}}, //print final output
             {"values", {"list<string>"}},
@@ -72,8 +72,8 @@ class Parser
         };
 
 
-        void V(std::string prev_func); // set currEdges
-        void E(std::string prev_func); // set currNodes
+        void V(std::string prev_func, std::string type); // set currNodes 
+        void E(std::string prev_func); // set currEdges 
 
         void has(std::string prev_func, std::vector<std::string> labels);
         void hasNot(std::string prev_func, std::vector<std::string> labels);
