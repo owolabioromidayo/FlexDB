@@ -59,18 +59,27 @@ bool Parser::readGraph(std::string filename)
 bool Parser::is_valid_expr(std::string expr)
 { 
     //decompose expr
-    ExprDetails n_expr = utils::get_expr_map(expr);
-    std::vector<std::string> functions = n_expr.functions;
-    std::unordered_map<std::string, std::vector<std::string>> umap = n_expr.umap;
+    ExprDetails n_expr ;
+    std::vector<std::string> functions ;
+    std::unordered_map<std::string, std::vector<std::string>> umap ;
+    try{
 
-    std::cout << "Validating expr " << expr << std::endl;
-    //return empty expr
-    if(functions.size() < 2)
-    {
-        std::cout << "Query is not long enough" << std::endl;
+        n_expr = utils::get_expr_map(expr);
+        functions = n_expr.functions;
+        umap = n_expr.umap;
+
+        std::cout << "Validating expr " << expr << std::endl;
+        //return empty expr
+        if(functions.size() < 2)
+        {
+            std::cout << "Query is not long enough" << std::endl;
+            return false;
+        }
+
+    }catch (int e){
+        std::cout << "Expr does not make proper use of braces\n";
         return false;
     }
-
     //do a simple pass to check if all ops are there before digging further 
     for(int i=1; i < functions.size(); ++i)
     {

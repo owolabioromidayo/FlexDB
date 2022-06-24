@@ -143,38 +143,42 @@ void Graph::serialize(){
 
 void Graph::deserialize(std::string filename)
 {
-    std::ifstream i(filename);
-    json j;
-    i >> j;
+    try{
+        std::ifstream i(filename);
+        json j;
+        i >> j;
 
-    json nodes = j["nodes"];
-    //create new nodes
-    for (json::iterator it = nodes.begin(); it != nodes.end(); ++it)
-    {
-        std::string nodeId= it.key();
-        json nodeData = it.value();
+        json nodes = j["nodes"];
+        //create new nodes
+        for (json::iterator it = nodes.begin(); it != nodes.end(); ++it)
+        {
+            std::string nodeId= it.key();
+            json nodeData = it.value();
 
-        Node n(nodeData["name"] , nodeData["type"], nodeId);
-        //insert table data back into node
-        json table = nodeData["table"];
-        for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2)
-            n.table.insert_row(it2.key(), it2.value());
+            Node n(nodeData["name"] , nodeData["type"], nodeId);
+            //insert table data back into node
+            json table = nodeData["table"];
+            for (json::iterator it2 = table.begin(); it2 != table.end(); ++it2)
+                n.table.insert_row(it2.key(), it2.value());
 
-        //insert connections back
-        json connections = nodeData["connections"];
-        for (json::iterator it2 = connections.begin(); it2 != connections.end(); ++it2)
-            n.add_connection(*it2);
+            //insert connections back
+            json connections = nodeData["connections"];
+            for (json::iterator it2 = connections.begin(); it2 != connections.end(); ++it2)
+                n.add_connection(*it2);
 
-        this->add_node(n);
-    }
+            this->add_node(n);
+        }
 
-    //rebuild edges
-    json edges = j["edges"];
-    for (json::iterator it = edges.begin(); it != edges.end(); ++it)
-    {
-        json edgeData = it.value();
-        TableData table = (TableData) edgeData["table"];
-        this->add_edge(edgeData["source"], edgeData["source"], edgeData["label"], table, it.key());
+        //rebuild edges
+        json edges = j["edges"];
+        for (json::iterator it = edges.begin(); it != edges.end(); ++it)
+        {
+            json edgeData = it.value();
+            TableData table = (TableData) edgeData["table"];
+            this->add_edge(edgeData["source"], edgeData["source"], edgeData["label"], table, it.key());
+        }
+    }catch (int e){
+        std::cout << "invalid file \n";
     }
     
 }
