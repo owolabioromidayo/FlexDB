@@ -51,8 +51,18 @@ class Parser
             {"groupCountBy", {"string"}}, // 'arg'
             {"has", {"list<string>"}}, // [a1,a2,a3]
             {"hasNot", {"list<string>"}}, // [a1,a2,a3]
-            {"rankBy", {"string"}} //string -> label where value is int/float/string
+            {"rankBy", {"string"}}, //string -> label where value is int/float/string
             //how do we typecheck nodes and edges, havent finished proto yet
+            {"addEdge", {"string", "string", "list<string>"}},
+            {"addNode", {"string", "string", "list<string>"}},
+            {"updateNodeTable", {"list<string>"}},
+            {"updateEdgeTable", {"list<string>"}},
+            {"addNodeConnections", {"string", "list<string>"}},
+            {"delNodeConnections", {"list<string>"}},
+            {"getEdgesByIds",{"list<string>"}}, 
+            {"getNodesByIds", {"list<string>"}},
+            {"delEdgesByIds", {"list<string>"}},
+            {"delNodesByIds", {"list<string>"}},
 
         };
 
@@ -69,28 +79,45 @@ class Parser
             {"has", {"V", "E"}}, 
             {"hasNot", {"V", "E"}}, 
             {"rankBy", {"has", "hasNot", "V", "E"}},
+            {"addEdge", {"g"}},
+            {"addNode", {"g"}},
+            {"updateNodeTable", {"g"}},
+            {"updateEdgeTable", {"g"}},
+            {"addNodeConnections", {"g"}},
+            {"delNodeConnections", {"g"}},
+            {"getEdgesByIds", {"g"}},
+            {"getNodesByIds", {"g"}},
+            {"delEdgesByIds", {"g"}},
+            {"delNodesByIds", {"g"}},
         };
 
 
         void V(std::string prev_func, std::string type); // set currNodes 
         void E(std::string prev_func); // set currEdges 
 
+        //filter operations
         void has(std::string prev_func, std::vector<std::string> labels);
         void hasNot(std::string prev_func, std::vector<std::string> labels);
         void rankBy(std::string prev_func, std::string property, bool ascending = true);
+        void groupCountBy(std::string prev_func, std::string label);
+        void groupCount(std::string prev_func);
 
 
         //mutation ops
-        void getNode(std::string prev_func, std::string id);
-        void getEdge(std::string prev_func, std::string id);
-        void addNode(std::string prev_func, Node nnode); // copy args of Graph.add
-        void addEdge(std::string prev_func, Edge n_edge);
-        void delNode(std::string prev_func,Node nnode);
-        void delEdge(std::string prev_func, Edge n_edge);
+        void getNodesByIds(std::string prev_func, std::vector<std::string> ids);
+        void getEdgesByIds(std::string prev_func, std::vector<std::string> ids);
 
+        void addNode(std::string prev_func, std::string name, std::string type, std::vector<std::string> mapL); // copy args of Graph.add
+        void addEdge(std::string prev_func, std::string name, std::string label, std::vector<std::string> mapL); // copy args of Graph.add
 
-        void groupCountBy(std::string prev_func, std::string label);
-        void groupCount(std::string prev_func);
+        void delNodesByIds(std::string prev_func, std::vector<std::string> ids);
+        void delEdgesByIds(std::string prev_func, std::vector<std::string> ids);
+
+        void updateNodeTable(std::string prev_func, std::vector<std::string> mapL);
+        void updateEdgeTable(std::string prev_func, std::vector<std::string> mapL);
+
+        void addNodeConnections(std::string prev_func, std::string label, std::vector<std::string> ids);
+        void delNodeConnections(std::string prev_func, std::vector<std::string> ids);
 
         //end ops
         void limit(std::string prev_func, int limit); // limits output of current list based on instruction
