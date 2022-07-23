@@ -75,10 +75,39 @@ void Graph::delete_node(std::string id)
         Edge currEdge = it->second;
         if (currEdge.source == id || currEdge.dest == id)
             it = edgeMap.erase(it);
-        else
-            ++it;
+        ++it;
     }
 }
+
+void Graph::delete_connection(std::string id1, std::string id2)
+{
+    auto it =  edgeMap.begin();
+    while(it != edgeMap.end())
+    {
+        Edge curr = it->second;
+        if ((curr.source == id1 && curr.dest == id2 ) || (curr.dest == id1 && curr.source == id2))
+            it = edgeMap.erase(it);
+        ++it;
+    }
+    Node n1 = this->nodeMap[id1];
+    n1.delete_connection(id2);
+
+    Node n2 = this->nodeMap[id2];
+    n2.delete_connection(id1);
+}
+
+void Graph::delete_edge(std::string id)
+{
+    this->edgeMap.erase(id);
+    auto it =  nodeMap.begin();
+    while(it != nodeMap.end())
+    {
+        Node currNode = it->second;
+        currNode.delete_connection(id);
+        ++it;
+    }
+}
+
 
 
 void Graph::serialize(){

@@ -81,6 +81,17 @@ void Node::add_connection(std::string n)
     this->connections.insert(n);
 }
 
+void Node::delete_connection(Node *n)
+{
+    std::string id  = n->get_id();
+    this->connections.erase(id);
+}
+
+void Node::delete_connection(std::string n)
+{
+    this->connections.erase(n);
+}
+
 //setters and getters
 void Node::__repr__()
 {

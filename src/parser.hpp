@@ -53,12 +53,12 @@ class Parser
             {"hasNot", {"list<string>"}}, // [a1,a2,a3]
             {"rankBy", {"string"}}, //string -> label where value is int/float/string
             //how do we typecheck nodes and edges, havent finished proto yet
-            {"addEdge", {"string", "string", "list<string>"}},
+            {"addEdge", {"string", "string", "string", "list<string>"}},
             {"addNode", {"string", "string", "list<string>"}},
-            {"updateNodeTable", {"list<string>"}},
-            {"updateEdgeTable", {"list<string>"}},
-            {"addNodeConnections", {"string", "list<string>"}},
-            {"delNodeConnections", {"list<string>"}},
+            {"updateNodeTable", {"string", "list<string>"}},
+            {"updateEdgeTable", {"string", "list<string>"}},
+            {"addNodeConnections", {"string", "string", "list<string>"}},
+            {"delNodeConnections", {"string", "list<string>"}},
             {"getEdgesByIds",{"list<string>"}}, 
             {"getNodesByIds", {"list<string>"}},
             {"delEdgesByIds", {"list<string>"}},
@@ -108,16 +108,16 @@ class Parser
         void getEdgesByIds(std::string prev_func, std::vector<std::string> ids);
 
         void addNode(std::string prev_func, std::string name, std::string type, std::vector<std::string> mapL); // copy args of Graph.add
-        void addEdge(std::string prev_func, std::string name, std::string label, std::vector<std::string> mapL); // copy args of Graph.add
+        void addEdge(std::string prev_func, std::string source_id, std::string dest_id,  std::string label, std::vector<std::string> mapL); // copy args of Graph.add
 
         void delNodesByIds(std::string prev_func, std::vector<std::string> ids);
         void delEdgesByIds(std::string prev_func, std::vector<std::string> ids);
 
-        void updateNodeTable(std::string prev_func, std::vector<std::string> mapL);
-        void updateEdgeTable(std::string prev_func, std::vector<std::string> mapL);
+        void updateNodeTable(std::string prev_func, std::string id, std::vector<std::string> mapL);
+        void updateEdgeTable(std::string prev_func, std::string id, std::vector<std::string> mapL);
 
-        void addNodeConnections(std::string prev_func, std::string label, std::vector<std::string> ids);
-        void delNodeConnections(std::string prev_func, std::vector<std::string> ids);
+        void addNodeConnections(std::string prev_func,std::string node_id, std::string label, std::vector<std::string> ids);
+        void delNodeConnections(std::string prev_func,std::string node_id, std::vector<std::string> ids);
 
         //end ops
         void limit(std::string prev_func, int limit); // limits output of current list based on instruction

@@ -24,6 +24,9 @@ class Node
         void add_connection(Node* n);
         void add_connection(std::string n);
 
+        void delete_connection(Node* n);
+        void delete_connection(std::string n);
+
         void __repr__();
 
         //setters and getters

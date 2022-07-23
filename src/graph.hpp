@@ -21,6 +21,8 @@ class Graph
         void add_edge(std::string id1,std::string id2, std::string label, TableData table, std::string id);
 
         void delete_node(std::string id);
+        void delete_edge(std::string id);
+        void delete_connection(std::string id1, std::string id2);
 
         Node& get_node(std::string id);
         NodeList get_nodes(std::string type);

@@ -541,3 +541,84 @@ void Parser::rankBy(std::string prev_func, std::string property, bool ascending)
 {
     //do nothing for now
 }
+
+        
+void Parser::addNode(std::string prev_func, std::string name, std::string type, std::vector<std::string> mapL)
+{
+    Node n(name, type);
+    int max = mapL.size() ;
+    for(int i=0; i < max; i+=2)
+    {
+        if((i + 1) == max)
+                break;
+        n.table.insert_row(mapL[i], mapL[i+1]);
+    }
+    this->g.add_node(n);
+}
+
+
+void Parser::addEdge(std::string prev_func, std::string source_id, std::string dest_id,  std::string label, std::vector<std::string> mapL) 
+{
+    TableData table;
+    int max = mapL.size() ;
+    for(int i=0; i < max; i+=2)
+    {
+        if((i + 1) == max)
+                break;
+        table[mapL[i]]  =  mapL[i+1];
+    }
+
+    this->g.add_edge(source_id, dest_id, label, table);
+}
+
+
+void Parser::delNodesByIds(std::string prev_func, std::vector<std::string> ids)
+{
+    for(int i=0; i < ids.size(); i++)
+        this->g.delete_node(ids[i]);
+}
+
+void Parser::delEdgesByIds(std::string prev_func, std::vector<std::string> ids)
+{
+    for(int i=0; i < ids.size(); i++)
+        this->g.delete_edge(ids[i]);
+}
+
+void Parser::updateNodeTable(std::string prev_func, std::string id, std::vector<std::string> mapL)
+{
+    Node& node = this->g.get_node(id);
+    int max = mapL.size() ;
+    
+    for(int i=0; i < max; i+=2)
+    {
+        if((i + 1) == max)
+                break;
+        node.table.insert_row(mapL[i], mapL[i+1]);
+    }
+
+}
+void Parser::updateEdgeTable(std::string prev_func,std::string id, std::vector<std::string> mapL)
+{
+    Edge& edge= this->g.get_edge(id);
+    int max = mapL.size() ;
+    
+    for(int i=0; i < max; i+=2)
+    {
+        if((i + 1) == max)
+                break;
+        edge.table.insert_row(mapL[i], mapL[i+1]);
+    }
+
+}
+void Parser::addNodeConnections(std::string prev_func, std::string node_id, std::string label, std::vector<std::string> ids)
+{
+    for(int i=0; i < ids.size(); ++i)
+    {
+        this->g.add_edge(node_id, ids[i], label, {});
+    }
+}
+void Parser::delNodeConnections(std::string prev_func, std::string node_id, std::vector<std::string> ids)
+{
+    for(int i=0; i < ids.size(); ++i)
+        this->g.delete_connection(node_id, ids[i]);
+}
