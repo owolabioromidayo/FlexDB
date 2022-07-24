@@ -30,9 +30,25 @@ class Node
         void __repr__();
 
         //setters and getters
-        std::string get_name();
-        std::string get_type();
-        std::string get_id();
+        std::string get_name() const;
+        std::string get_type() const;
+        std::string get_id() const;
+
+
+        bool operator<(const Node& rhs) const
+        {
+            if(get_name() < rhs.get_name() )
+                return true;
+            return false;
+
+        }
+
+        // bool operator==(const Node& rhs) const
+        // {
+        //     if(get_id()  == rhs.get_id() )
+        //         return true;
+        //     return false;
+        // }
 
     private:
         std::string name;
@@ -57,6 +73,13 @@ struct Edge
             return true;
         return false;
     }
+
+    // bool operator==(const Edge& rhs) const
+    // {
+    //     if(id == rhs.id)
+    //         return true;
+    //     return false;
+    // }
 
     void __repr__() const
     {

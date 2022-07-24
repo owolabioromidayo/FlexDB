@@ -384,3 +384,12 @@ NodeList Graph::get_nodes_by_labels(std::vector<std::string> labels)
     return V;
 }
 
+NodeList Graph::get_out_nodes(Node node)
+{
+    NodeList retList = {};
+    std::set<std::string> conns = node.get_connections();
+    for( auto it = conns.begin(); it != conns.end(); ++it)
+            retList.push_back(this->get_node(*it));
+
+    return retList; 
+}

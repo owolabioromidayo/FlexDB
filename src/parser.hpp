@@ -59,10 +59,11 @@ class Parser
             {"updateEdgeTable", {"string", "list<string>"}},
             {"addNodeConnections", {"string", "string", "list<string>"}},
             {"delNodeConnections", {"string", "list<string>"}},
-            {"getEdgesByIds",{"list<string>"}}, 
-            {"getNodesByIds", {"list<string>"}},
+            {"selectNodes",{"list<string>"}}, 
+            {"selectEdges", {"list<string>"}},
             {"delEdgesByIds", {"list<string>"}},
             {"delNodesByIds", {"list<string>"}},
+            {"outE", {"list<string>"}}, //go out by an Edge
 
         };
 
@@ -85,10 +86,11 @@ class Parser
             {"updateEdgeTable", {"g"}},
             {"addNodeConnections", {"g"}},
             {"delNodeConnections", {"g"}},
-            {"getEdgesByIds", {"g"}},
-            {"getNodesByIds", {"g"}},
+            {"selectNodes", {"g"}},
+            {"selectEdges", {"g"}},
             {"delEdgesByIds", {"g"}},
             {"delNodesByIds", {"g"}},
+            {"outE", {"limit", "has", "hasNot", "selectNodes"}}, //go out by an Edge
         };
 
 
@@ -103,9 +105,9 @@ class Parser
         void groupCount(std::string prev_func);
 
 
+        void selectNodes(std::string prev_func, std::vector<std::string> ids); //select edges 
+        void selectEdges(std::string prev_func, std::vector<std::string> ids);
         //mutation ops
-        void getNodesByIds(std::string prev_func, std::vector<std::string> ids);
-        void getEdgesByIds(std::string prev_func, std::vector<std::string> ids);
 
         void addNode(std::string prev_func, std::string name, std::string type, std::vector<std::string> mapL); // copy args of Graph.add
         void addEdge(std::string prev_func, std::string source_id, std::string dest_id,  std::string label, std::vector<std::string> mapL); // copy args of Graph.add
@@ -124,8 +126,10 @@ class Parser
         void values(std::string prev_func, std::vector<std::string> labels); //extract these values from curr;
         void count(std::string prev_func); //return count of curr items : g.V().count()
 
-        //traversal operations
         void out(std::string prev_func); // print results 
+
+        //traversal operations
+        void outE(std::string prev_func, std::string labels); // go out by selected Edge labels
 
     public:
         Parser(); // functions should be restricted without a graph ERR no graph, init with empty graph

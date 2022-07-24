@@ -26,6 +26,7 @@ class Graph
 
         Node& get_node(std::string id);
         NodeList get_nodes(std::string type);
+        NodeList get_out_nodes(Node node);
         std::vector<std::string> get_node_ids_by_type(std::string type);
         std::vector<std::string> get_node_ids_by_name(std::string name);
 

@@ -542,7 +542,40 @@ void Parser::rankBy(std::string prev_func, std::string property, bool ascending)
     //do nothing for now
 }
 
+void Parser::selectEdges(std::string prev_func, std::vector<std::string> ids)
+{
+    this->curr_edges = {}; 
+    for(int i=0; i < ids.size(); ++i)
+    {
+        try
+        {
+            Edge& edge= this->g.get_edge(ids[i]);
+            this->curr_edges.push_back(edge);
+
+        }catch(int e){
+            continue;
+        }
+    }
+
+}
         
+void Parser::selectNodes(std::string prev_func, std::vector<std::string> ids)
+{
+    this->curr_nodes= {}; 
+    for(int i=0; i < ids.size(); ++i)
+    {
+        try
+        {
+            Node& node = this->g.get_node(ids[i]);
+            this->curr_nodes.push_back(node);
+
+        }catch(int e){
+            continue;
+        }
+    }
+
+}
+
 void Parser::addNode(std::string prev_func, std::string name, std::string type, std::vector<std::string> mapL)
 {
     Node n(name, type);
@@ -621,4 +654,30 @@ void Parser::delNodeConnections(std::string prev_func, std::string node_id, std:
 {
     for(int i=0; i < ids.size(); ++i)
         this->g.delete_connection(node_id, ids[i]);
+}
+
+void Parser::outE(std::string prev_func, std::string labels)
+{
+   if(!this->isV){
+        std::cout << "No nodes selected. \n";
+        return;
+   } 
+
+    //do it in graph  (how tho) do for each, there should be an operation for each from graph
+    std::set<Node> node_set;
+    for (auto it = this->curr_nodes.begin(); it != this->curr_nodes.end(); ++it)
+    {
+        try{
+            NodeList new_additions = this->g.get_out_nodes(*it);
+            for (auto it2= new_additions.begin(); it != new_additions.end(); ++it2)
+                node_set.insert(*it2);
+        }
+        catch(int e)
+        {
+            std::cout << "Invalid Node in Local set \n";
+        }
+    }
+
+    this->curr_nodes = {};
+    std::copy(node_set.begin(), node_set.end(), this->curr_nodes.begin());
 }

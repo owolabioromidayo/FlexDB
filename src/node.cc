@@ -108,7 +108,7 @@ void Node::__repr__()
         std::cout << "\t\t" << it->first << " - " << it->second<< std::endl;  
 }
 
-std::string Node::get_name(){ return name;}
-std::string Node::get_type(){ return type;}
-std::string Node::get_id(){ return id;}
+std::string Node::get_name() const { return name;}
+std::string Node::get_type()const { return type;}
+std::string Node::get_id()const { return id;}
 
