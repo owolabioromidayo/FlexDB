@@ -9,3 +9,9 @@ Features ⚡⚡
 - REPL(A Shell) (WIP).
 - Graph Traversal Operations (WIP).
 - A Qt based Frontend (Maybe)
+- Python Bindings?
+
+
+Issues 
+- no real entry point to the program (you have to write code or use the incomplete shell).
+- some basic functions are not implemented ( but the meaty graph stuff is).
